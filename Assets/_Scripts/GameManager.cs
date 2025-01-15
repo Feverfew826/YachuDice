@@ -141,7 +141,7 @@ public class GameManager : MonoBehaviour
             {
                 rollCount++;
 
-                await RollDiceAsync();
+                await RollDiceAsync(cancellationToken);
 
                 player.SetPreviewScores(CalcScores());
             }
@@ -192,13 +192,13 @@ public class GameManager : MonoBehaviour
         return CalcScore(numbers);
     }
 
-    private async UniTask RollDiceAsync()
+    private async UniTask RollDiceAsync(CancellationToken cancellationToken)
     {
         var tasks = new List<UniTask>();
         for (var i = 0; i < DiceNum; i++)
         {
             if (_keepFlags[i] == false)
-                tasks.Add(_dices[i].RollAsync(_force, _torque, _rollDuration));
+                tasks.Add(_dices[i].RollAsync(_force, _torque, _rollDuration, cancellationToken));
         }
 
         await UniTask.WhenAll(tasks);
@@ -206,30 +206,31 @@ public class GameManager : MonoBehaviour
         foreach (var dice in _dices)
             dice.Stop();
 
-        await RecallDicesAsync();
+        await RecallDicesAsync(cancellationToken);
     }
 
-    private async UniTask RecallDicesAsync()
+    private async UniTask RecallDicesAsync(CancellationToken cancellationToken)
     {
         var tasks = new List<UniTask>();
         for (var i = 0; i < DiceNum; i++)
         {
-            var moveTask = MoveAsync(_dices[i].transform, _diceInitialPositions[i], _recallDuration);
+            var moveTask = MoveAsync(_dices[i].transform, _diceInitialPositions[i], _recallDuration, cancellationToken);
+            var rotateTask = _dices[i].RotateToNumberAsync(_recallDuration, cancellationToken);
             tasks.Add(moveTask);
-            tasks.Add(_dices[i].RotateToNumberAsync(_recallDuration));
+            tasks.Add(rotateTask);
         }
 
         await UniTask.WhenAll(tasks);
     }
 
-    private async UniTask MoveAsync(Transform targetTransform, Vector3 destination, float duration)
+    private async UniTask MoveAsync(Transform targetTransform, Vector3 destination, float duration, CancellationToken cancellationToken)
     {
-        var targetTime = Time.time + duration;
-        var delta = (destination - targetTransform.position).magnitude / duration * Time.deltaTime;
-        while (Time.time < targetTime)
+        var targetTime = Time.fixedTime + duration;
+        var delta = (destination - targetTransform.position).magnitude / duration * Time.fixedDeltaTime;
+        while (Time.fixedTime < targetTime)
         {
             targetTransform.position = Vector3.MoveTowards(targetTransform.position, destination, delta);
-            await UniTask.NextFrame();
+            await UniTask.NextFrame(PlayerLoopTiming.FixedUpdate, cancellationToken: cancellationToken);
         }
         targetTransform.position = destination;
     }

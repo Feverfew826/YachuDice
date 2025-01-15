@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 
 using Cysharp.Threading.Tasks;
 
@@ -19,7 +20,7 @@ public class Dice : MonoBehaviour
         _colliderAudio.Play();
     }
 
-    public async UniTask RollAsync(float force, float torque, float minDuration)
+    public async UniTask RollAsync(float force, float torque, float minDuration, CancellationToken cancellationToken)
     {
         _rigidbody.isKinematic = false;
 
@@ -29,8 +30,8 @@ public class Dice : MonoBehaviour
         _rigidbody.AddForce(direction * force, ForceMode.Impulse);
         _rigidbody.AddTorque(Random.insideUnitSphere * torque, ForceMode.Impulse);
 
-        await UniTask.Delay(System.TimeSpan.FromSeconds(minDuration));
-        await UniTask.WaitUntil(() => _rigidbody.velocity.magnitude < _stopVelocityTolerance && _rigidbody.angularVelocity.magnitude < _stopAngularVelocityTolerance).Timeout(System.TimeSpan.FromSeconds(_stopTimeout));
+        await UniTask.Delay(System.TimeSpan.FromSeconds(minDuration), cancellationToken: cancellationToken);
+        await UniTask.WaitUntil(() => _rigidbody.velocity.magnitude < _stopVelocityTolerance && _rigidbody.angularVelocity.magnitude < _stopAngularVelocityTolerance, cancellationToken: cancellationToken).Timeout(System.TimeSpan.FromSeconds(_stopTimeout));
     }
 
     public void Stop()
@@ -38,18 +39,18 @@ public class Dice : MonoBehaviour
         _rigidbody.isKinematic = true;
     }
 
-    public async UniTask RotateToNumberAsync(float duration)
+    public async UniTask RotateToNumberAsync(float duration, CancellationToken cancellationToken)
     {
         var result = GetResult();
         var index = result - 1;
         var destinationRotation = Quaternion.Euler(_rotations[index]);
 
-        var targetTime = Time.time + duration;
-        var delta = Quaternion.Angle(destinationRotation, transform.rotation) / duration * Time.deltaTime;
-        while (Time.time < targetTime)
+        var targetTime = Time.fixedTime + duration;
+        var delta = Quaternion.Angle(destinationRotation, transform.rotation) / duration * Time.fixedDeltaTime;
+        while (Time.fixedTime < targetTime)
         {
             transform.rotation = Quaternion.RotateTowards(transform.rotation, destinationRotation, delta);
-            await UniTask.NextFrame();
+            await UniTask.NextFrame(PlayerLoopTiming.FixedUpdate, cancellationToken: cancellationToken);
         }
 
         transform.rotation = destinationRotation;
