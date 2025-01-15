@@ -1,6 +1,6 @@
 # YachuDice
 주사위 게임 요트(Yacht)를 구현한 것입니다.\
-<img src="./img/myImg.png" alt="YachuDice의 스크린샷" style="witdh:60%; height:auto;">\
+<img src="./Images/Image01.PNG" alt="YachuDice의 스크린샷" style="witdh:60%; height:auto;">\
 이 프로젝트는 친구들 사이에 51 Worldwide Games의 Yacht Dice가 유행하던 시기에 간단하게 구현해 본 것을 정리하여 업로드한 것입니다.
 
 ## 상세 설명
