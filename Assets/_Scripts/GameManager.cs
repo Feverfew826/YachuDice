@@ -105,59 +105,82 @@ public class GameManager : MonoBehaviour
 
             _rollButton.gameObject.SetActive(canRollMore);
 
-            var canFix = hasRolled;
-            if (canFix)
-            {
-                foreach (var category in _allCategories)
-                {
-                    var index = (int)category;
-                    _fixButtons[index].interactable = player.HasScore(category) == false;
-                }
-            }
-            else
-            {
-                foreach (var button in _fixButtons)
-                    button.interactable = false;
-            }
+            UpdateFixButtons(player, hasRolled);
 
             var canKeep = hasRolled && canRollMore;
             foreach (var button in _keepButtons)
                 button.gameObject.SetActive(canKeep);
 
-            // 사용자 입력 수신
-            var userInput = await WaitUserInputAsync(cancellationToken);
+            var shouldBreakTurn = await ProcessUserChoiceAsync(player, cancellationToken);
 
-            // UI 비활성화
-            _rollButton.gameObject.SetActive(false);
-
-            foreach (var button in _fixButtons)
-                button.interactable = false;
-
-            foreach (var button in _keepButtons)
-                button.gameObject.SetActive(false);
-
-            // 사용자 입력 처리(돌리거나, 멈추거나)
-            if (userInput.inputType == InputType.Roll)
-            {
-                rollCount++;
-
-                await RollDiceAsync(cancellationToken);
-
-                player.SetPreviewScores(CalcScores());
-            }
-            else if (userInput.inputType == InputType.Fix)
-            {
-                foreach (var category in _allCategories)
-                    player.ResetText(category);
-
-                var scores = CalcScores();
-
-                player.SetFixScore(userInput.category, scores[userInput.category]);
+            if (shouldBreakTurn)
                 break;
-            }
+
+            rollCount++;
         }
 
         player.Turn(false);
+    }
+
+    private async System.Threading.Tasks.Task<bool> ProcessUserChoiceAsync(PlayerScoreUi player, CancellationToken cancellationToken)
+    {
+        // 사용자 입력 수신
+        var userInput = await WaitUserInputAsync(cancellationToken);
+
+        MakeUIElementsUninteractable();
+
+        // 사용자 입력 처리(돌리거나, 멈추거나)
+        if (userInput.inputType == InputType.Roll)
+        {
+            await RollDiceAsync(cancellationToken);
+
+            player.SetPreviewScores(CalcScores());
+
+            return false;
+        }
+        else if (userInput.inputType == InputType.Fix)
+        {
+            foreach (var category in _allCategories)
+                player.ResetText(category);
+
+            var scores = CalcScores();
+
+            player.SetFixScore(userInput.category, scores[userInput.category]);
+
+            return true;
+        }
+
+        Assert.IsTrue(false, "Unexpected user input.");
+        return false;
+    }
+
+    private void MakeUIElementsUninteractable()
+    {
+        _rollButton.gameObject.SetActive(false);
+
+        foreach (var button in _fixButtons)
+            button.interactable = false;
+
+        foreach (var button in _keepButtons)
+            button.gameObject.SetActive(false);
+    }
+
+    private void UpdateFixButtons(PlayerScoreUi player, bool hasRolled)
+    {
+        var canFix = hasRolled;
+        if (canFix)
+        {
+            foreach (var category in _allCategories)
+            {
+                var index = (int)category;
+                _fixButtons[index].interactable = player.HasScore(category) == false;
+            }
+        }
+        else
+        {
+            foreach (var button in _fixButtons)
+                button.interactable = false;
+        }
     }
 
     private async UniTask<UserInput> WaitUserInputAsync(CancellationToken cancellationToken)
