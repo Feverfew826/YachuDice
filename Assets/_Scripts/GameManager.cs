@@ -193,6 +193,13 @@ public class GameManager : MonoBehaviour
             button.gameObject.SetActive(false);
     }
 
+    private async UniTask ProcessUserChoiceRollAsync(PlayerScoreBoard playerScoreBoard, CancellationToken cancellationToken)
+    {
+        var rollResult = await RollDicesAsync(cancellationToken);
+
+        playerScoreBoard.SetPreviewScores(CalculateCombinationScores(rollResult));
+    }
+
     private void ProcessUserChoiceConfirm(PlayerScoreBoard playerScoreBoard, Combination confirmedCombination)
     {
         foreach (var combination in _allCombinations)
@@ -201,13 +208,6 @@ public class GameManager : MonoBehaviour
         var scores = CalculateCombinationScores(GetCurrentDiceValues());
 
         playerScoreBoard.SetConfirmedScore(confirmedCombination, scores[confirmedCombination]);
-    }
-
-    private async System.Threading.Tasks.Task ProcessUserChoiceRollAsync(PlayerScoreBoard playerScoreBoard, CancellationToken cancellationToken)
-    {
-        var rollResult = await RollDicesAsync(cancellationToken);
-
-        playerScoreBoard.SetPreviewScores(CalculateCombinationScores(rollResult));
     }
 
     private async UniTask<List<int>> RollDicesAsync(CancellationToken cancellationToken)
