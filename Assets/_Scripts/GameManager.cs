@@ -120,12 +120,23 @@ public class GameManager : MonoBehaviour
             // 입력 처리 동안 UI 요소 비활성화
             MakeUIElementsUninteractable();
 
-            var hasConfirmed = await ProcessUserChoiceRollOrConfirmAsync(playerScoreBoard, userChoice, cancellationToken);
+            // 사용자 입력 처리(돌리거나, 멈추거나)
+            if (userChoice.choiceType == ChoiceType.Roll)
+            {
+                await ProcessUserChoiceRollAsync(playerScoreBoard, cancellationToken);
 
-            if (hasConfirmed)
-                break;
-            else
                 rollCount++;
+            }
+            else if (userChoice.choiceType == ChoiceType.Confirm)
+            {
+                ProcessUserChoiceConfirm(playerScoreBoard, userChoice.combination);
+
+                break;
+            }
+            else
+            {
+                Assert.IsTrue(false, "Unexpected user choice.");
+            }
         }
 
         playerScoreBoard.Highlight(false);
@@ -149,7 +160,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private async UniTask<UserInput> WaitUserChoiceRollOrConfirmAsync(CancellationToken cancellationToken)
+    private async UniTask<UserChoice> WaitUserChoiceRollOrConfirmAsync(CancellationToken cancellationToken)
     {
         using var whenAnyCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         var whenAnyCancellationToken = whenAnyCancellationTokenSource.Token;
@@ -163,11 +174,11 @@ public class GameManager : MonoBehaviour
         if (whenAnyResult.hasResultLeft)
         {
             Assert.IsTrue(typeof(Combination).IsEnumDefined(whenAnyResult.result));
-            return new UserInput { inputType = InputType.Confirm, combination = (Combination)whenAnyResult.result };
+            return new UserChoice { choiceType = ChoiceType.Confirm, combination = (Combination)whenAnyResult.result };
         }
         else
         {
-            return new UserInput { inputType = InputType.Roll };
+            return new UserChoice { choiceType = ChoiceType.Roll };
         }
     }
 
@@ -182,31 +193,21 @@ public class GameManager : MonoBehaviour
             button.gameObject.SetActive(false);
     }
 
-    private async UniTask<bool> ProcessUserChoiceRollOrConfirmAsync(PlayerScoreBoard playerScoreBoard, UserInput userInput, CancellationToken cancellationToken)
+    private void ProcessUserChoiceConfirm(PlayerScoreBoard playerScoreBoard, Combination confirmedCombination)
     {
-        // 사용자 입력 처리(돌리거나, 멈추거나)
-        if (userInput.inputType == InputType.Roll)
-        {
-            var rollResult = await RollDicesAsync(cancellationToken);
+        foreach (var combination in _allCombinations)
+            playerScoreBoard.ResetText(combination);
 
-            playerScoreBoard.SetPreviewScores(CalculateCombinationScores(rollResult));
+        var scores = CalculateCombinationScores(GetCurrentDiceValues());
 
-            return false;
-        }
-        else if (userInput.inputType == InputType.Confirm)
-        {
-            foreach (var combination in _allCombinations)
-                playerScoreBoard.ResetText(combination);
+        playerScoreBoard.SetConfirmedScore(confirmedCombination, scores[confirmedCombination]);
+    }
 
-            var scores = CalculateCombinationScores(GetCurrentDiceValues());
+    private async System.Threading.Tasks.Task ProcessUserChoiceRollAsync(PlayerScoreBoard playerScoreBoard, CancellationToken cancellationToken)
+    {
+        var rollResult = await RollDicesAsync(cancellationToken);
 
-            playerScoreBoard.SetConfirmedScore(userInput.combination, scores[userInput.combination]);
-
-            return true;
-        }
-
-        Assert.IsTrue(false, "Unexpected user input.");
-        return false;
+        playerScoreBoard.SetPreviewScores(CalculateCombinationScores(rollResult));
     }
 
     private async UniTask<List<int>> RollDicesAsync(CancellationToken cancellationToken)
@@ -346,13 +347,13 @@ public class GameManager : MonoBehaviour
         return scoreDictionary;
     }
 
-    private struct UserInput
+    private struct UserChoice
     {
-        public InputType inputType;
+        public ChoiceType choiceType;
         public Combination combination;
     }
 
-    private enum InputType
+    private enum ChoiceType
     {
         Roll,
         Confirm
