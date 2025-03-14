@@ -71,11 +71,12 @@ public class GameManager : MonoBehaviour
             _keepFlags.Add(false);
         }
 
+        _keepFlags.ObserveReplace().Subscribe(data => _keepImages[data.Index].gameObject.SetActive(data.NewValue)).AddTo(this);
+
         for (var i = 0; i < DiceNum; i++)
         {
             var indexCapture = i;
             _keepButtons[indexCapture].OnClickAsObservable().Subscribe(_ => _keepFlags[indexCapture] = _keepFlags[indexCapture] == false).AddTo(this);
-            _keepFlags.ObserveReplace().Subscribe(data => _keepImages[data.Index].gameObject.SetActive(data.NewValue)).AddTo(this);
         }
 
         PlayGameAsync(destroyCancellationToken).Forget();
