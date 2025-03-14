@@ -130,44 +130,6 @@ public class GameManager : MonoBehaviour
         playerScoreBoard.Highlight(false);
     }
 
-    private async System.Threading.Tasks.Task<bool> ProcessUserChoiceRollOrConfirmAsync(PlayerScoreBoard playerScoreBoard, UserInput userInput, CancellationToken cancellationToken)
-    {
-        // 사용자 입력 처리(돌리거나, 멈추거나)
-        if (userInput.inputType == InputType.Roll)
-        {
-            var rollResult = await RollDicesAsync(cancellationToken);
-
-            playerScoreBoard.SetPreviewScores(CalculateCombinationScores(rollResult));
-
-            return false;
-        }
-        else if (userInput.inputType == InputType.Confirm)
-        {
-            foreach (var combination in _allCombinations)
-                playerScoreBoard.ResetText(combination);
-
-            var scores = CalculateCombinationScores(GetCurrentDiceValues());
-
-            playerScoreBoard.SetConfirmedScore(userInput.combination, scores[userInput.combination]);
-
-            return true;
-        }
-
-        Assert.IsTrue(false, "Unexpected user input.");
-        return false;
-    }
-
-    private void MakeUIElementsUninteractable()
-    {
-        _rollButton.gameObject.SetActive(false);
-
-        foreach (var button in _confirmButtons)
-            button.interactable = false;
-
-        foreach (var button in _keepButtons)
-            button.gameObject.SetActive(false);
-    }
-
     private void UpdateConfirmButtons(PlayerScoreBoard playerScoreBoard, bool hasRolled)
     {
         var canConfirm = hasRolled;
@@ -206,6 +168,44 @@ public class GameManager : MonoBehaviour
         {
             return new UserInput { inputType = InputType.Roll };
         }
+    }
+
+    private void MakeUIElementsUninteractable()
+    {
+        _rollButton.gameObject.SetActive(false);
+
+        foreach (var button in _confirmButtons)
+            button.interactable = false;
+
+        foreach (var button in _keepButtons)
+            button.gameObject.SetActive(false);
+    }
+
+    private async UniTask<bool> ProcessUserChoiceRollOrConfirmAsync(PlayerScoreBoard playerScoreBoard, UserInput userInput, CancellationToken cancellationToken)
+    {
+        // 사용자 입력 처리(돌리거나, 멈추거나)
+        if (userInput.inputType == InputType.Roll)
+        {
+            var rollResult = await RollDicesAsync(cancellationToken);
+
+            playerScoreBoard.SetPreviewScores(CalculateCombinationScores(rollResult));
+
+            return false;
+        }
+        else if (userInput.inputType == InputType.Confirm)
+        {
+            foreach (var combination in _allCombinations)
+                playerScoreBoard.ResetText(combination);
+
+            var scores = CalculateCombinationScores(GetCurrentDiceValues());
+
+            playerScoreBoard.SetConfirmedScore(userInput.combination, scores[userInput.combination]);
+
+            return true;
+        }
+
+        Assert.IsTrue(false, "Unexpected user input.");
+        return false;
     }
 
     private async UniTask<List<int>> RollDicesAsync(CancellationToken cancellationToken)
