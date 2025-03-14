@@ -85,16 +85,16 @@ public class GameManager : MonoBehaviour
     {
         for (var i = 0; i < TurnNum; i++)
         {
-            foreach (var player in _playerScoreBoards)
+            foreach (var playerScoreBoard in _playerScoreBoards)
             {
-                await PlayTrunAsync(player, cancellationToken);
+                await PlayTrunAsync(playerScoreBoard, cancellationToken);
             }
         }
     }
 
-    private async UniTask PlayTrunAsync(PlayerScoreBoard player, CancellationToken cancellationToken)
+    private async UniTask PlayTrunAsync(PlayerScoreBoard playerScoreBoard, CancellationToken cancellationToken)
     {
-        player.Turn(true);
+        playerScoreBoard.Highlight(true);
 
         for (var i = 0; i < DiceNum; i++)
             _keepFlags[i] = false;
@@ -102,54 +102,53 @@ public class GameManager : MonoBehaviour
         var rollCount = 0;
         while (true)
         {
-            // UI 초기화
             var hasRolled = rollCount > 0;
             var canRollMore = rollCount < _rollNum;
 
+            // UI 업데이트
             _rollButton.gameObject.SetActive(canRollMore);
 
-            UpdateConfirmButtons(player, hasRolled);
+            UpdateConfirmButtons(playerScoreBoard, hasRolled);
 
             var canKeep = hasRolled && canRollMore;
             foreach (var button in _keepButtons)
                 button.gameObject.SetActive(canKeep);
 
-            var shouldBreakTurn = await ProcessUserChoiceAsync(player, cancellationToken);
+            var userChoice = await WaitUserChoiceRollOrConfirmAsync(cancellationToken);
 
-            if (shouldBreakTurn)
+            // 입력 처리 동안 UI 요소 비활성화
+            MakeUIElementsUninteractable();
+
+            var hasConfirmed = await ProcessUserChoiceRollOrConfirmAsync(playerScoreBoard, userChoice, cancellationToken);
+
+            if (hasConfirmed)
                 break;
-
-            rollCount++;
+            else
+                rollCount++;
         }
 
-        player.Turn(false);
+        playerScoreBoard.Highlight(false);
     }
 
-    private async System.Threading.Tasks.Task<bool> ProcessUserChoiceAsync(PlayerScoreBoard player, CancellationToken cancellationToken)
+    private async System.Threading.Tasks.Task<bool> ProcessUserChoiceRollOrConfirmAsync(PlayerScoreBoard playerScoreBoard, UserInput userInput, CancellationToken cancellationToken)
     {
-        // 사용자 입력 수신
-        var userInput = await WaitUserInputAsync(cancellationToken);
-
-        // 입력 처리 동안 UI 요소 비활성화
-        MakeUIElementsUninteractable();
-
         // 사용자 입력 처리(돌리거나, 멈추거나)
         if (userInput.inputType == InputType.Roll)
         {
             var rollResult = await RollDicesAsync(cancellationToken);
 
-            player.SetPreviewScores(CalculateCombinationScores(rollResult));
+            playerScoreBoard.SetPreviewScores(CalculateCombinationScores(rollResult));
 
             return false;
         }
         else if (userInput.inputType == InputType.Confirm)
         {
             foreach (var combination in _allCombinations)
-                player.ResetText(combination);
+                playerScoreBoard.ResetText(combination);
 
             var scores = CalculateCombinationScores(GetCurrentDiceValues());
 
-            player.SetConfirmedScore(userInput.combination, scores[userInput.combination]);
+            playerScoreBoard.SetConfirmedScore(userInput.combination, scores[userInput.combination]);
 
             return true;
         }
@@ -169,7 +168,7 @@ public class GameManager : MonoBehaviour
             button.gameObject.SetActive(false);
     }
 
-    private void UpdateConfirmButtons(PlayerScoreBoard player, bool hasRolled)
+    private void UpdateConfirmButtons(PlayerScoreBoard playerScoreBoard, bool hasRolled)
     {
         var canConfirm = hasRolled;
         if (canConfirm)
@@ -177,7 +176,7 @@ public class GameManager : MonoBehaviour
             foreach (var combination in _allCombinations)
             {
                 var index = (int)combination;
-                _confirmButtons[index].interactable = player.HasConfirmedScore(combination) == false;
+                _confirmButtons[index].interactable = playerScoreBoard.HasConfirmedScore(combination) == false;
             }
         }
         else
@@ -187,7 +186,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private async UniTask<UserInput> WaitUserInputAsync(CancellationToken cancellationToken)
+    private async UniTask<UserInput> WaitUserChoiceRollOrConfirmAsync(CancellationToken cancellationToken)
     {
         using var whenAnyCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         var whenAnyCancellationToken = whenAnyCancellationTokenSource.Token;

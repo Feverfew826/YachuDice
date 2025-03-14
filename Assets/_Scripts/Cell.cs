@@ -9,7 +9,7 @@ public class Cell : MonoBehaviour
     [SerializeField] private Image _background;
     [SerializeField] private Text _scoreText;
 
-    public void Turn(bool On)
+    public void Highlight(bool On)
     {
         if(On)
             _background.color = Color.yellow;

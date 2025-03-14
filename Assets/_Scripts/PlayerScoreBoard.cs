@@ -71,12 +71,12 @@ public class PlayerScoreBoard : MonoBehaviour
         }).AddTo(this);
     }
 
-    public void Turn(bool on)
+    public void Highlight(bool on)
     {
         foreach (var cell in _cells)
-            cell.Turn(on);
+            cell.Highlight(on);
 
-        _totalScoreCell.Turn(on);
+        _totalScoreCell.Highlight(on);
     }
 
     public void SetPreviewScores(Dictionary<Combination, int> scoreDictionary)
