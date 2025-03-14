@@ -688,14 +688,14 @@ MonoBehaviour:
   _playerNames:
   - Player1
   - Player2
-  _playerParent: {fileID: 740552595}
-  _playerPrefab: {fileID: 234623879907332412, guid: 596ddfbdef9f4e84fa1887ffc9efdc9b, type: 3}
   _dices:
   - {fileID: 3567534466588537954}
   - {fileID: 312402940}
   - {fileID: 1631792216}
   - {fileID: 1129359449}
   - {fileID: 287495577}
+  _playerParent: {fileID: 740552595}
+  _playerPrefab: {fileID: 234623879907332412, guid: 596ddfbdef9f4e84fa1887ffc9efdc9b, type: 3}
   _keepImages:
   - {fileID: 1549534587}
   - {fileID: 409045213}
@@ -708,7 +708,7 @@ MonoBehaviour:
   - {fileID: 848583987}
   - {fileID: 1413364637}
   - {fileID: 2142390058}
-  _fixButtons:
+  _confirmButtons:
   - {fileID: 3988578265104563300}
   - {fileID: 596401003}
   - {fileID: 1363554458}
@@ -722,10 +722,10 @@ MonoBehaviour:
   - {fileID: 865248515}
   - {fileID: 866581148}
   _rollButton: {fileID: 130633778}
-  _rollDuration: 2
-  _force: 30
-  _torque: 30
-  _recallDuration: 0.5
+  _diceRollDuration: 2
+  _diceRollForce: 30
+  _diceRollTorque: 30
+  _diceRecallDuration: 0.5
 --- !u!4 &361572073
 Transform:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerScoreUi : MonoBehaviour
+public class PlayerScoreBoard : MonoBehaviour
 {
     private const int BonusScoreThreshold = 63;
     private const int BonusScore = 35;
@@ -15,7 +15,7 @@ public class PlayerScoreUi : MonoBehaviour
     [SerializeField] private Text _nameText;
     [SerializeField] private Text _bonusSumText;
 
-    private ReactiveDictionary<Category, int> _scoreDictionary = new ReactiveDictionary<Category, int>();
+    private ReactiveDictionary<Combination, int> _scoreDictionary = new ReactiveDictionary<Combination, int>();
 
     public void SetName(string name)
     {
@@ -40,23 +40,23 @@ public class PlayerScoreUi : MonoBehaviour
     private int CalcBonusSum()
     {
         var bonusSums = 0;
-        if (_scoreDictionary.ContainsKey(Category.Aces))
-            bonusSums += _scoreDictionary[Category.Aces];
-        if (_scoreDictionary.ContainsKey(Category.Deuces))
-            bonusSums += _scoreDictionary[Category.Deuces];
-        if (_scoreDictionary.ContainsKey(Category.Threes))
-            bonusSums += _scoreDictionary[Category.Threes];
-        if (_scoreDictionary.ContainsKey(Category.Fours))
-            bonusSums += _scoreDictionary[Category.Fours];
-        if (_scoreDictionary.ContainsKey(Category.Fives))
-            bonusSums += _scoreDictionary[Category.Fives];
-        if (_scoreDictionary.ContainsKey(Category.Sixes))
-            bonusSums += _scoreDictionary[Category.Sixes];
+        if (_scoreDictionary.ContainsKey(Combination.Aces))
+            bonusSums += _scoreDictionary[Combination.Aces];
+        if (_scoreDictionary.ContainsKey(Combination.Deuces))
+            bonusSums += _scoreDictionary[Combination.Deuces];
+        if (_scoreDictionary.ContainsKey(Combination.Threes))
+            bonusSums += _scoreDictionary[Combination.Threes];
+        if (_scoreDictionary.ContainsKey(Combination.Fours))
+            bonusSums += _scoreDictionary[Combination.Fours];
+        if (_scoreDictionary.ContainsKey(Combination.Fives))
+            bonusSums += _scoreDictionary[Combination.Fives];
+        if (_scoreDictionary.ContainsKey(Combination.Sixes))
+            bonusSums += _scoreDictionary[Combination.Sixes];
 
         return bonusSums;
     }
 
-    public bool HasScore(Category category)
+    public bool HasConfirmedScore(Combination category)
     {
         return _scoreDictionary.ContainsKey(category);
     }
@@ -79,7 +79,7 @@ public class PlayerScoreUi : MonoBehaviour
         _totalScoreCell.Turn(on);
     }
 
-    public void SetPreviewScores(Dictionary<Category, int> scoreDictionary)
+    public void SetPreviewScores(Dictionary<Combination, int> scoreDictionary)
     {
         foreach(var key in scoreDictionary.Keys)
         {
@@ -88,13 +88,13 @@ public class PlayerScoreUi : MonoBehaviour
         }
     }
 
-    public void SetFixScore(Category category, int score)
+    public void SetConfirmedScore(Combination category, int score)
     {
         _scoreDictionary.Add(category, score);
         SetScore(category, score, Color.black);
     }
 
-    public void ResetText(Category category)
+    public void ResetText(Combination category)
     {
         if (_scoreDictionary.ContainsKey(category) == false)
         {
@@ -104,7 +104,7 @@ public class PlayerScoreUi : MonoBehaviour
         }
     }
 
-    private void SetScore(Category category, int score, Color color)
+    private void SetScore(Combination category, int score, Color color)
     {
         var index = (int)category;
 

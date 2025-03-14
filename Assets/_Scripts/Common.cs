@@ -1,4 +1,4 @@
-public enum Category
+public enum Combination
 {
     Aces = 0,
     Deuces,
