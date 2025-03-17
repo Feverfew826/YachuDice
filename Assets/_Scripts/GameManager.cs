@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -73,13 +74,17 @@ public class GameManager : MonoBehaviour
 
         _keepFlags.ObserveReplace().Subscribe(data => _keepImages[data.Index].gameObject.SetActive(data.NewValue)).AddTo(this);
 
-        for (var i = 0; i < DiceNum; i++)
-        {
-            var indexCapture = i;
-            _keepButtons[indexCapture].OnClickAsObservable().Subscribe(_ => _keepFlags[indexCapture] = _keepFlags[indexCapture] == false).AddTo(this);
-        }
+        var buttonClicks = _keepButtons.Select(elmt => elmt.OnClickAsObservable());
+        buttonClicks.Zip(Enumerable.Range(0, DiceNum), (buttonClick, index) => buttonClick.Subscribe(_ => OnKeepButtonChanged(index)).AddTo(this)).Consume();
 
         PlayGameAsync(destroyCancellationToken).Forget();
+    }
+
+    public void OnKeepButtonChanged(int keepButtonIndex)
+    {
+        _keepFlags[keepButtonIndex] = _keepFlags[keepButtonIndex] == false;
+        var hasRollableDice = _keepFlags.Any(elmt => elmt == false);
+        _rollButton.interactable = hasRollableDice;
     }
 
     private async UniTask PlayGameAsync(CancellationToken cancellationToken)

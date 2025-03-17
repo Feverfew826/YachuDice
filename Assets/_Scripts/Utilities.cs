@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -26,6 +27,15 @@ namespace Utilities
             whenAnyCancellationTokenSource.Cancel();
 
             return result;
+        }
+
+        // 참고: https://github.com/morelinq/MoreLINQ/blob/master/MoreLinq/Consume.cs
+        public static void Consume<T>(this IEnumerable<T> source)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            foreach (var _ in source)
+            {
+            }
         }
     }
 }
