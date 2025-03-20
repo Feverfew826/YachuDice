@@ -7,6 +7,13 @@
       "dependencies": {},
       "hash": "73d86259ce31ce7f4dfe1d028ea1c3edf96c23e4"
     },
+    "com.feverfew826.dilib": {
+      "version": "https://github.com/Feverfew826/DiLib.git?path=Assets/Plugins/DiLib",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "e477ec875af3383090c1b5fccc60045bdf3198c9"
+    },
     "com.neuecc.unirx": {
       "version": "https://github.com/neuecc/UniRx.git?path=Assets/Plugins/UniRx/Scripts",
       "depth": 0,
