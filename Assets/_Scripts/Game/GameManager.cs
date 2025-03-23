@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button[] _keepButtons;
     [SerializeField] private Button[] _confirmButtons;
     [SerializeField] private Button _rollButton;
+    [SerializeField] private Button _quitButton;
 
     [Header("Dice Roll Settings")]
     [SerializeField] private float _diceRollDuration;
@@ -49,7 +50,7 @@ public class GameManager : MonoBehaviour
     private List<Combination> _allCombinations = new List<Combination>();
     private List<Vector3> _diceInitialPositions = new List<Vector3>();
 
-    private void Start()
+    public async UniTask<GameResult> PlayGameAsync(GameParameter gameParameters, CancellationToken cancellationToken)
     {
         foreach (Combination combination in System.Enum.GetValues(typeof(Combination)))
             _allCombinations.Add(combination);
@@ -77,7 +78,21 @@ public class GameManager : MonoBehaviour
         var buttonClicks = _keepButtons.Select(elmt => elmt.OnClickAsObservable());
         buttonClicks.Zip(Enumerable.Range(0, DiceNum), (buttonClick, index) => buttonClick.Subscribe(_ => OnKeepButtonChanged(index)).AddTo(this)).Consume();
 
-        PlayGameAsync(destroyCancellationToken).Forget();
+        var quitCancellationTokenSource = new CancellationTokenSource();
+        _quitButton.OnClickAsObservable().Subscribe(_ => quitCancellationTokenSource.Cancel()).AddTo(this);
+
+        using var linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, destroyCancellationToken, quitCancellationTokenSource.Token);
+        try
+        {
+            await PlayGameAsync(linkedCancellationToken.Token);
+        }
+        catch (OperationCanceledException e)
+        {
+            if (quitCancellationTokenSource.IsCancellationRequested)
+                return new GameResult();
+        }
+
+        return new GameResult();
     }
 
     public void OnKeepButtonChanged(int keepButtonIndex)
@@ -362,5 +377,15 @@ public class GameManager : MonoBehaviour
     {
         Roll,
         Confirm
+    }
+
+    public struct GameParameter
+    {
+
+    }
+
+    public struct GameResult
+    {
+
     }
 }
