@@ -9,6 +9,7 @@ using UniRx;
 
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 using Utilities;
@@ -45,10 +46,23 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float _diceRollTorque;
     [SerializeField] private float _diceRecallDuration;
 
+    [Header("Pause Menu")]
+    [SerializeField] private GameObject _pauseMenuParent;
+    [SerializeField] private Button _pauseMenuResumeButton;
+    [SerializeField] private Button _pauseMenuQuitButton;
+
     private List<PlayerScoreBoard> _playerScoreBoards = new List<PlayerScoreBoard>();
     private ReactiveCollection<bool> _keepFlags = new ReactiveCollection<bool>();
     private List<Combination> _allCombinations = new List<Combination>();
     private List<Vector3> _diceInitialPositions = new List<Vector3>();
+
+    private CancellationTokenSource _quitCancellationTokenSource = new();
+
+    private void Update()
+    {
+        if (Input.GetButtonDown("Cancel"))
+            OnQuitButton(Unit.Default);
+    }
 
     public async UniTask<GameResult> PlayGameAsync(GameParameter gameParameters, CancellationToken cancellationToken)
     {
@@ -78,18 +92,19 @@ public class GameManager : MonoBehaviour
         var buttonClicks = _keepButtons.Select(elmt => elmt.OnClickAsObservable());
         buttonClicks.Zip(Enumerable.Range(0, DiceNum), (buttonClick, index) => buttonClick.Subscribe(_ => OnKeepButtonChanged(index)).AddTo(this)).Consume();
 
-        var quitCancellationTokenSource = new CancellationTokenSource();
-        _quitButton.OnClickAsObservable().Subscribe(_ => quitCancellationTokenSource.Cancel()).AddTo(this);
+        _quitButton.OnClickAsObservable().Subscribe(OnQuitButton).AddTo(this);
 
-        using var linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, destroyCancellationToken, quitCancellationTokenSource.Token);
+        using var linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, destroyCancellationToken, _quitCancellationTokenSource.Token);
         try
         {
             await PlayGameAsync(linkedCancellationToken.Token);
         }
-        catch (OperationCanceledException e)
+        catch (OperationCanceledException)
         {
-            if (quitCancellationTokenSource.IsCancellationRequested)
+            if (_quitCancellationTokenSource.IsCancellationRequested)
                 return new GameResult();
+            else
+                throw;
         }
 
         return new GameResult();
@@ -128,6 +143,8 @@ public class GameManager : MonoBehaviour
 
             // UI 업데이트
             _rollButton.gameObject.SetActive(canRollMore);
+            if (canRollMore)
+                EventSystem.current.SetSelectedGameObject(_rollButton.gameObject);
 
             UpdateConfirmButtons(playerScoreBoard, hasRolled);
 
@@ -365,6 +382,36 @@ public class GameManager : MonoBehaviour
         scoreDictionary[Combination.Choice] = numbersSum;
 
         return scoreDictionary;
+    }
+
+    private void OnQuitButton(Unit unit)
+    {
+        if (_pauseMenuParent.gameObject.activeInHierarchy)
+        {
+            _pauseMenuResumeButton.onClick.Invoke();
+            return;
+        }
+
+        PauseMenuAsync(destroyCancellationToken).Forget();
+    }
+
+    private async UniTask PauseMenuAsync(CancellationToken cancellationToken)
+    {
+        var selectionBackedup = EventSystem.current.currentSelectedGameObject;
+
+        _pauseMenuParent.gameObject.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(_pauseMenuResumeButton.gameObject);
+        var result = await Utilities.Utilities.OnAnyClickAsync(_pauseMenuResumeButton, _pauseMenuQuitButton, cancellationToken);
+
+        if(result == _pauseMenuQuitButton)
+        {
+            _quitCancellationTokenSource.Cancel();
+        }
+        else
+        {
+            _pauseMenuParent.gameObject.SetActive(false);
+            EventSystem.current.SetSelectedGameObject(selectionBackedup);
+        }
     }
 
     private struct UserChoice

@@ -1,11 +1,17 @@
+using System;
+using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
+
+using Codice.Client.Common.GameUI;
 
 using Cysharp.Threading.Tasks;
 
 using UnityEditor;
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public static class Main
@@ -20,33 +26,121 @@ public static class Main
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static void Boot()
     {
-        MainAsync(new CancellationToken()).Forget();
+        SupportEventSystemAsync(Application.exitCancellationToken).Forget();
+
+        if (SceneManager.GetActiveScene().buildIndex == 0)
+            MainAsync(Application.exitCancellationToken).Forget();
+        else
+            PlaySceneAsync(Application.exitCancellationToken).Forget();
     }
 
-    public async static UniTask MainAsync(CancellationToken cancellationToken)
+    public static async UniTask SupportEventSystemAsync(CancellationToken cancellationToken)
     {
-        while(true)
+        try
         {
-            var titleScene = SceneManager.GetActiveScene();
-            var titleSceneManager = titleScene.GetRootGameObjects().First(elmt => elmt.TryGetComponent<TitleSceneManager>(out var _)).GetComponent<TitleSceneManager>();
-            var titleSceneUserInputResult = await titleSceneManager.WaitUserInputAsync(cancellationToken);
+            var lastEventSystem = default(EventSystem);
+            var lastSelectedGameObject = default(GameObject);
 
-            if(titleSceneUserInputResult.IsStartGame)
+            while (true)
             {
-                await SceneManager.LoadSceneAsync("GameScene");
-                var gameManager = SceneManager.GetActiveScene().GetRootGameObjects().First(elmt => elmt.TryGetComponent<GameManager>(out var _)).GetComponent<GameManager>();
-                var gameResult = await gameManager.PlayGameAsync(new GameManager.GameParameter(), cancellationToken);
-                await SceneManager.LoadSceneAsync("TitleScene");
+                var eventSystem = EventSystem.current;
+
+                if (eventSystem != null && eventSystem == lastEventSystem)
+                {
+                    var selectedGameObject = eventSystem.currentSelectedGameObject;
+                    if (selectedGameObject == null)
+                        eventSystem.SetSelectedGameObject(lastSelectedGameObject);
+                    else
+                        lastSelectedGameObject = selectedGameObject;
+                }
+                else if(eventSystem != null)
+                {
+                    lastEventSystem = eventSystem;
+                }
+
+                await UniTask.NextFrame(PlayerLoopTiming.Update, cancellationToken);
             }
-            else if (titleSceneUserInputResult.IsExitGame)
+        }
+        catch (OperationCanceledException)
+        {
+            if (cancellationToken.IsCancellationRequested == false)
+                throw;
+        }
+    }
+
+    public static async UniTask MainAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            while (true)
             {
-                if(_isEditor)
+                var titleScene = SceneManager.GetActiveScene();
+                var titleSceneManager = SceneManager.GetActiveScene().GetComponent<TitleSceneManager>();
+                var titleSceneUserInputResult = await titleSceneManager.WaitUserInputAsync(cancellationToken);
+
+                if (titleSceneUserInputResult.IsStartGame)
+                {
+                    await SceneManager.LoadSceneAsync("GameScene");
+                    var gameManager = SceneManager.GetActiveScene().GetComponent<GameManager>();
+                    var gameResult = await gameManager.PlayGameAsync(new GameManager.GameParameter(), cancellationToken);
+                    await SceneManager.LoadSceneAsync("TitleScene");
+                }
+                else if (titleSceneUserInputResult.IsExitGame)
+                {
+                    if (_isEditor)
+                        EditorApplication.ExitPlaymode();
+                    else
+                        Application.Quit();
+
+                    break;
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            if (cancellationToken.IsCancellationRequested == false)
+                throw;
+        }
+    }
+
+    public static async UniTask PlaySceneAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var rootGameObjects = SceneManager.GetActiveScene().GetRootGameObjects();
+            if (rootGameObjects.TryGetComponent<GameManager>(out var gameManager))
+            {
+                await gameManager.PlayGameAsync(new GameManager.GameParameter(), Application.exitCancellationToken);
+
+                if (_isEditor)
                     EditorApplication.ExitPlaymode();
                 else
                     Application.Quit();
-
-                break;
             }
         }
+        catch (OperationCanceledException)
+        {
+            if (cancellationToken.IsCancellationRequested == false)
+                throw;
+        }
+    }
+
+    public static T GetComponent<T>(this Scene scene)
+    {
+        scene.GetRootGameObjects().TryGetComponent<T>(out var component);
+        return component;
+    }
+
+    public static bool TryGetComponent<T>(this Scene scene, out T component)
+    {
+        return scene.GetRootGameObjects().TryGetComponent<T>(out component);
+    }
+
+    public static bool TryGetComponent<T>(this GameObject[] gameObjects, out T component)
+    {
+        var foundedComponent = default(T);
+        gameObjects.FirstOrDefault(elmt => elmt.TryGetComponent(out foundedComponent));
+        component = foundedComponent;
+        return component != null;
     }
 }
