@@ -31,7 +31,7 @@ public class Dice : MonoBehaviour
         _rigidbody.AddTorque(Random.insideUnitSphere * torque, ForceMode.Impulse);
 
         await UniTask.Delay(System.TimeSpan.FromSeconds(minDuration), cancellationToken: cancellationToken);
-        await UniTask.WaitUntil(() => _rigidbody.velocity.magnitude < _stopVelocityTolerance && _rigidbody.angularVelocity.magnitude < _stopAngularVelocityTolerance, cancellationToken: cancellationToken).Timeout(System.TimeSpan.FromSeconds(_stopTimeout));
+        await UniTask.WaitUntil(() => _rigidbody.linearVelocity.magnitude < _stopVelocityTolerance && _rigidbody.angularVelocity.magnitude < _stopAngularVelocityTolerance, cancellationToken: cancellationToken).Timeout(System.TimeSpan.FromSeconds(_stopTimeout));
     }
 
     public void Stop()
