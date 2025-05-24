@@ -5,7 +5,8 @@
         "DiLib",
         "YachuDice.Environment.Interface",
         "YachuDice.Environment.EditorEnvironment",
-        "YachuDice.Environment.AndroidEnvironment"
+        "YachuDice.Environment.AndroidEnvironment",
+        "YachuDice.Environment.WindowsEnvironment"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

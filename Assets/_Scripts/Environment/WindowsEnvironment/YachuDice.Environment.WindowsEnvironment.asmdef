@@ -1,0 +1,19 @@
+{
+    "name": "YachuDice.Environment.WindowsEnvironment",
+    "rootNamespace": "YachuDice.Environment.WindowsEnvironment",
+    "references": [
+        "GUID:4afa4b4fe537acb4b8fdabd3596b27fa"
+    ],
+    "includePlatforms": [
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

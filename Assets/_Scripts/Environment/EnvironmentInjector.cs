@@ -13,6 +13,8 @@ namespace YachuDice.Environment
         {
 #if UNITY_EDITOR
             Containers.ProjectContext.Set<IEnvironment>(new EditorEnvironment.EditorEnvironment());
+#elif UNITY_STANDALONE_WIN
+            Containers.ProjectContext.Set<IEnvironment>(new WindowsEnvironment.WindowsEnvironment());
 #elif UNITY_ANDROID
             Containers.ProjectContext.Set<IEnvironment>(new AndroidEnvironment.AndroidEnvironment());
 #endif
