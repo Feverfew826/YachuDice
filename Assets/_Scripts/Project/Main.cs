@@ -1,10 +1,6 @@
 using System;
-using System.ComponentModel;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
-
-using Codice.Client.Common.GameUI;
 
 using Cysharp.Threading.Tasks;
 
@@ -53,7 +49,7 @@ public static class Main
                     else
                         lastSelectedGameObject = selectedGameObject;
                 }
-                else if(eventSystem != null)
+                else if (eventSystem != null)
                 {
                     lastEventSystem = eventSystem;
                 }
