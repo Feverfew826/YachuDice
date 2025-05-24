@@ -1,0 +1,19 @@
+{
+    "name": "YachuDice.Environment",
+    "rootNamespace": "YachuDice.Environment",
+    "references": [
+        "DiLib",
+        "YachuDice.Environment.Interface",
+        "YachuDice.Environment.EditorEnvironment",
+        "YachuDice.Environment.AndroidEnvironment"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

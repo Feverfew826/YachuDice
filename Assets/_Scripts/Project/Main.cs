@@ -4,21 +4,16 @@ using System.Threading;
 
 using Cysharp.Threading.Tasks;
 
-using UnityEditor;
+using Feverfew.DiLib;
 
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
+using YachuDice.Environment.Interface;
+
 public static class Main
 {
-    private static bool _isEditor =
-#if UNITY_EDITOR
-        true;
-#else
-        false;
-#endif
-
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static void Boot()
     {
@@ -83,10 +78,7 @@ public static class Main
                 }
                 else if (titleSceneUserInputResult.IsExitGame)
                 {
-                    if (_isEditor)
-                        EditorApplication.ExitPlaymode();
-                    else
-                        Application.Quit();
+                    Containers.ProjectContext.Get<IEnvironment>().ExitGame();
 
                     break;
                 }
@@ -108,10 +100,7 @@ public static class Main
             {
                 await gameManager.PlayGameAsync(new GameManager.GameParameter(), Application.exitCancellationToken);
 
-                if (_isEditor)
-                    EditorApplication.ExitPlaymode();
-                else
-                    Application.Quit();
+                Containers.ProjectContext.Get<IEnvironment>().ExitGame();
             }
         }
         catch (OperationCanceledException)

@@ -1,0 +1,18 @@
+{
+    "name": "YachuDice.Environment.AndroidEnvironment",
+    "rootNamespace": "YachuDice.Environment.AndroidEnvironment",
+    "references": [
+        "GUID:4afa4b4fe537acb4b8fdabd3596b27fa"
+    ],
+    "includePlatforms": [
+        "Android"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

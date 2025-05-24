@@ -1,0 +1,18 @@
+{
+    "name": "YachuDice.Environment.EditorEnvironment",
+    "rootNamespace": "YachuDice.Environment.EditorEnvironment",
+    "references": [
+        "GUID:4afa4b4fe537acb4b8fdabd3596b27fa"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
