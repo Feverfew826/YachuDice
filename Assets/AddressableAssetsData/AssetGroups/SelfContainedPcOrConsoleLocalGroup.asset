@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: SelfContainedPcOrConsoleLocalGroup
+  m_EditorClassIdentifier: 
+  m_GroupName: SelfContainedPcOrConsoleLocalGroup
+  m_GUID: d0e3483822692744ba7603b60dce6adf
+  m_SerializeEntries:
+  - m_GUID: e18166842cfa7e74e84873b8fba8ae01
+    m_Address: QualitySettings.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: b535eeebf7cb7084c944f5d80485bfa5, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 9bc8aa5db3a1d214cbe593b658262469, type: 2}
+    - {fileID: 11400000, guid: 49209a9a3f7a1864186e07285cc2170a, type: 2}

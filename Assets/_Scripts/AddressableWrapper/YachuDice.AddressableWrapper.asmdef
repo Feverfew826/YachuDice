@@ -1,13 +1,11 @@
 {
-    "name": "YachuDice.Project",
-    "rootNamespace": "",
+    "name": "YachuDice.AddressableWrapper",
+    "rootNamespace": "YachuDice.AddressableWrapper",
     "references": [
+        "GUID:84651a3751eca9349aac36a66bba901b",
+        "GUID:9e24947de15b9834991c9d8411ea37cf",
         "GUID:f51ebe6a0ceec4240a699833d6309b23",
-        "GUID:f75819f1ac04368489f9b6a558b2c920",
-        "GUID:4afa4b4fe537acb4b8fdabd3596b27fa",
-        "GUID:08ed834196f591a43a2bba24226d94af",
-        "GUID:c2861bcfd5af09740800f98ca19f7e4a",
-        "GUID:6158395b08830e5459fbe31324b53886"
+        "GUID:593a5b492d29ac6448b1ebf7f035ef33"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
