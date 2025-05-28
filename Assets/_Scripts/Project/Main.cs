@@ -6,6 +6,8 @@ using Cysharp.Threading.Tasks;
 
 using Feverfew.DiLib;
 
+using Unity.Netcode;
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -69,14 +71,38 @@ public static class Main
                 var titleSceneManager = SceneManager.GetActiveScene().GetComponent<TitleSceneManager>();
                 var titleSceneUserInputResult = await titleSceneManager.WaitUserInputAsync(cancellationToken);
 
-                if (titleSceneUserInputResult.IsStartGame)
+                if (titleSceneUserInputResult.userInput == TitleSceneManager.UserInputType.PlayLocalGame)
                 {
                     await SceneManager.LoadSceneAsync("GameScene");
                     var gameManager = SceneManager.GetActiveScene().GetComponent<GameManager>();
                     var gameResult = await gameManager.PlayGameAsync(new GameManager.GameParameter(), cancellationToken);
                     await SceneManager.LoadSceneAsync("TitleScene");
                 }
-                else if (titleSceneUserInputResult.IsExitGame)
+                else if (titleSceneUserInputResult.userInput == TitleSceneManager.UserInputType.PlayNetworkGameAsHost)
+                {
+                    await SceneManager.LoadSceneAsync("NetworkGameScene");
+                    var isHostStarted = NetworkManager.Singleton.StartHost();
+                    if (isHostStarted)
+                    {
+                        var gameManager = SceneManager.GetActiveScene().GetComponent<GameManager>();
+                        var gameResult = await gameManager.PlayGameAsync(new GameManager.GameParameter(), cancellationToken);
+                        NetworkManager.Singleton.Shutdown();
+                    }
+                    await SceneManager.LoadSceneAsync("TitleScene");
+                }
+                else if (titleSceneUserInputResult.userInput == TitleSceneManager.UserInputType.PlayNetworkGameAsClient)
+                {
+                    await SceneManager.LoadSceneAsync("NetworkGameScene");
+                    var isClientStarted = NetworkManager.Singleton.StartClient();
+                    if (isClientStarted)
+                    {
+                        var gameManager = SceneManager.GetActiveScene().GetComponent<GameManager>();
+                        await UniTask.Delay(System.TimeSpan.FromSeconds(60), cancellationToken: cancellationToken);
+                        NetworkManager.Singleton.Shutdown();
+                    }
+                    await SceneManager.LoadSceneAsync("TitleScene");
+                }
+                else if (titleSceneUserInputResult.userInput == TitleSceneManager.UserInputType.Exit)
                 {
                     Containers.ProjectContext.Get<IEnvironment>().ExitGame();
 

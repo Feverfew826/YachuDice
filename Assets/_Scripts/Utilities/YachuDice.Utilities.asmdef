@@ -1,9 +1,8 @@
 {
-    "name": "YachuDice.Title",
-    "rootNamespace": "",
+    "name": "YachuDice.Utilities",
+    "rootNamespace": "YachuDice.Utilities",
     "references": [
-        "GUID:f51ebe6a0ceec4240a699833d6309b23",
-        "GUID:78a48944e91333044a404410e924bd5e"
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

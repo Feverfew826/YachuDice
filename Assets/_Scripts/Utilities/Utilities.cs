@@ -8,7 +8,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
-namespace Utilities
+namespace YachuDice.Utilities
 {
     public static class Utilities
     {
@@ -39,8 +39,51 @@ namespace Utilities
 
             if (result == 0)
                 return button0;
-            else 
+            else
                 return button1;
+        }
+
+        public static async UniTask<Button> OnAnyClickAsync(Button button0, Button button1, Button button2, CancellationToken cancellationToken)
+        {
+            using var whenAnyCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            var whenAnyCancellationToken = whenAnyCancellationTokenSource.Token;
+
+            var result = await UniTask.WhenAny(
+                button0.OnClickAsync(whenAnyCancellationToken),
+                button1.OnClickAsync(whenAnyCancellationToken),
+                button2.OnClickAsync(whenAnyCancellationToken)
+                );
+            whenAnyCancellationTokenSource.Cancel();
+
+            if (result == 0)
+                return button0;
+            else if (result == 1)
+                return button1;
+            else
+                return button2;
+        }
+
+        public static async UniTask<Button> OnAnyClickAsync(Button button0, Button button1, Button button2, Button button3, CancellationToken cancellationToken)
+        {
+            using var whenAnyCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            var whenAnyCancellationToken = whenAnyCancellationTokenSource.Token;
+
+            var result = await UniTask.WhenAny(
+                button0.OnClickAsync(whenAnyCancellationToken),
+                button1.OnClickAsync(whenAnyCancellationToken),
+                button2.OnClickAsync(whenAnyCancellationToken),
+                button3.OnClickAsync(whenAnyCancellationToken)
+                );
+            whenAnyCancellationTokenSource.Cancel();
+
+            if (result == 0)
+                return button0;
+            else if (result == 1)
+                return button1;
+            else if (result == 2)
+                return button2;
+            else
+                return button3;
         }
 
         public static async UniTask<(int winArgumentIndex, T0 result0, T1 result1)> WhenAnyWithLoserCancellationAsync<T0, T1>(UniTask<T0> task0, UniTask<T1> task1)

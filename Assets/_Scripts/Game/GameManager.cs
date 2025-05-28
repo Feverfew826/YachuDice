@@ -12,7 +12,7 @@ using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-using Utilities;
+using YachuDice.Utilities;
 
 public class GameManager : MonoBehaviour
 {
@@ -401,9 +401,9 @@ public class GameManager : MonoBehaviour
 
         _pauseMenuParent.gameObject.SetActive(true);
         EventSystem.current.SetSelectedGameObject(_pauseMenuResumeButton.gameObject);
-        var result = await Utilities.Utilities.OnAnyClickAsync(_pauseMenuResumeButton, _pauseMenuQuitButton, cancellationToken);
+        var result = await YachuDice.Utilities.Utilities.OnAnyClickAsync(_pauseMenuResumeButton, _pauseMenuQuitButton, cancellationToken);
 
-        if(result == _pauseMenuQuitButton)
+        if (result == _pauseMenuQuitButton)
         {
             _quitCancellationTokenSource.Cancel();
         }
