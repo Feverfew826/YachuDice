@@ -1,45 +1,51 @@
+using System.Threading;
+
+using Cysharp.Threading.Tasks;
+
 using Unity.Netcode;
 
-using UnityEngine;
-
-public class NetworkGameManager : MonoBehaviour
+public class NetworkGameManager : GameManager
 {
-    private NetworkManager _networkManager;
-
-    private void Awake()
+    public async UniTask<NetworkGameResult> PlayGameAsync(NetworkGameParameter gameParameters, CancellationToken cancellationToken)
     {
-        _networkManager = GetComponent<NetworkManager>();
+        var networkManager = NetworkManager.Singleton;
+        NetworkGameManagerHelpers.AutoConnectIfNotStartedNetwork(networkManager);
+
+        if (networkManager.IsHost)
+        {
+            await PlayGameAsHostAsync(cancellationToken);
+        }
+        else if (networkManager.IsClient)
+        {
+            await PlayGameAsClientAsync(cancellationToken);
+        }
+
+        return new NetworkGameResult();
+    }
+
+    public async UniTask PlayGameAsHostAsync(CancellationToken cancellationToken)
+    {
+        await UniTask.Delay(10000);
+    }
+
+    public async UniTask PlayGameAsClientAsync(CancellationToken cancellationToken)
+    {
+        await UniTask.Delay(10000);
+    }
+
+    public struct NetworkGameParameter
+    {
+
+    }
+
+    public struct NetworkGameResult
+    {
+
     }
 
     private void OnGUI()
     {
-        GUILayout.BeginArea(new Rect(10, 10, 300, 300));
-        if (!_networkManager.IsClient && !_networkManager.IsServer)
-        {
-            StartButtons();
-        }
-        else
-        {
-            StatusLabels();
-        }
-
-        GUILayout.EndArea();
-    }
-
-    private void StartButtons()
-    {
-        if (GUILayout.Button("Host")) _networkManager.StartHost();
-        if (GUILayout.Button("Client")) _networkManager.StartClient();
-        if (GUILayout.Button("Server")) _networkManager.StartServer();
-    }
-
-    private void StatusLabels()
-    {
-        var mode = _networkManager.IsHost ?
-                "Host" : _networkManager.IsServer ? "Server" : "Client";
-
-        GUILayout.Label("Transport: " +
-            _networkManager.NetworkConfig.NetworkTransport.GetType().Name);
-        GUILayout.Label("Mode: " + mode);
+        NetworkGameManagerHelpers.ShowNetworkStatus();
     }
 }
+

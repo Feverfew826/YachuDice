@@ -122,7 +122,13 @@ public static class Main
         try
         {
             var rootGameObjects = SceneManager.GetActiveScene().GetRootGameObjects();
-            if (rootGameObjects.TryGetComponent<GameManager>(out var gameManager))
+            if (rootGameObjects.TryGetComponent<NetworkGameManager>(out var networkGameManager))
+            {
+                await networkGameManager.PlayGameAsync(new NetworkGameManager.NetworkGameParameter(), Application.exitCancellationToken);
+
+                Containers.ProjectContext.Get<IEnvironment>().ExitGame();
+            }
+            else if (rootGameObjects.TryGetComponent<GameManager>(out var gameManager))
             {
                 await gameManager.PlayGameAsync(new GameManager.GameParameter(), Application.exitCancellationToken);
 

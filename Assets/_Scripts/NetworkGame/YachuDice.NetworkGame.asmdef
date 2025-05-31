@@ -2,7 +2,10 @@
     "name": "YachuDice.NetworkGame",
     "rootNamespace": "",
     "references": [
-        "GUID:1491147abca9d7d4bb7105af628b223e"
+        "GUID:1491147abca9d7d4bb7105af628b223e",
+        "GUID:767f25efd20d4339a8b1683f8dc1d7d8",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:c2861bcfd5af09740800f98ca19f7e4a"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
