@@ -25,12 +25,44 @@ public class NetworkGameManager : GameManager
 
     public async UniTask PlayGameAsHostAsync(CancellationToken cancellationToken)
     {
-        await UniTask.Delay(10000);
+        for (var i = 0; i < Constants.TurnNum; i++)
+        {
+            await PlayHostTurnAsync(cancellationToken);
+            await WaitClientTurnAsync(cancellationToken);
+        }
+    }
+
+    public async UniTask PlayHostTurnAsync(CancellationToken cancellationToken)
+    {
+        // Simulate host turn logic
+        await UniTask.Delay(10000, cancellationToken: cancellationToken);
+    }
+
+    public async UniTask WaitClientTurnAsync(CancellationToken cancellationToken)
+    {
+        // Simulate waiting for client turn logic
+        await UniTask.Delay(10000, cancellationToken: cancellationToken);
     }
 
     public async UniTask PlayGameAsClientAsync(CancellationToken cancellationToken)
     {
-        await UniTask.Delay(10000);
+        for (var i = 0; i < Constants.TurnNum; i++)
+        {
+            await WaitHostTurnAsync(cancellationToken);
+            await PlayClientTurnAsync(cancellationToken);
+        }
+    }
+
+    public async UniTask WaitHostTurnAsync(CancellationToken cancellationToken)
+    {
+        // Simulate waiting for host turn logic
+        await UniTask.Delay(10000, cancellationToken: cancellationToken);
+    }
+
+    public async UniTask PlayClientTurnAsync(CancellationToken cancellationToken)
+    {
+        // Simulate client turn logic
+        await UniTask.Delay(10000, cancellationToken: cancellationToken);
     }
 
     public struct NetworkGameParameter

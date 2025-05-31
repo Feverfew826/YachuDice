@@ -14,15 +14,18 @@ using UnityEngine.UI;
 
 using YachuDice.Utilities;
 
+public static class Constants
+{
+    public const int DiceNum = 5;
+    public const int TurnNum = 12;
+
+    public const int YatchScore = 50;
+    public const int LargeStraightScore = 30;
+    public const int SmallStraightScore = 15;
+}
+
 public class GameManager : MonoBehaviour
 {
-    private const int DiceNum = 5;
-    private const int TurnNum = 12;
-
-    private const int YatchScore = 50;
-    private const int LargeStraightScore = 30;
-    private const int SmallStraightScore = 15;
-
     [Header("Game Settings")]
     [SerializeField] private int _rollNum = 3;
 
@@ -69,9 +72,9 @@ public class GameManager : MonoBehaviour
         foreach (Combination combination in System.Enum.GetValues(typeof(Combination)))
             _allCombinations.Add(combination);
 
-        Assert.AreEqual(_dices.Length, DiceNum, $"Should set {DiceNum} dices.");
-        Assert.AreEqual(_keepImages.Length, DiceNum, $"Should set {DiceNum} keep images.");
-        Assert.AreEqual(_keepButtons.Length, DiceNum, $"Should set {DiceNum} keep buttons.");
+        Assert.AreEqual(_dices.Length, Constants.DiceNum, $"Should set {Constants.DiceNum} dices.");
+        Assert.AreEqual(_keepImages.Length, Constants.DiceNum, $"Should set {Constants.DiceNum} keep images.");
+        Assert.AreEqual(_keepButtons.Length, Constants.DiceNum, $"Should set {Constants.DiceNum} keep buttons.");
         Assert.AreEqual(_confirmButtons.Length, _allCombinations.Count, $"Should set {_allCombinations.Count} confirm buttons.");
 
         foreach (var playerName in _playerNames)
@@ -90,7 +93,7 @@ public class GameManager : MonoBehaviour
         _keepFlags.ObserveReplace().Subscribe(data => _keepImages[data.Index].gameObject.SetActive(data.NewValue)).AddTo(this);
 
         var buttonClicks = _keepButtons.Select(elmt => elmt.OnClickAsObservable());
-        buttonClicks.Zip(Enumerable.Range(0, DiceNum), (buttonClick, index) => buttonClick.Subscribe(_ => OnKeepButtonChanged(index)).AddTo(this)).Consume();
+        buttonClicks.Zip(Enumerable.Range(0, Constants.DiceNum), (buttonClick, index) => buttonClick.Subscribe(_ => OnKeepButtonChanged(index)).AddTo(this)).Consume();
 
         _quitButton.OnClickAsObservable().Subscribe(OnPauseButton).AddTo(this);
 
@@ -119,7 +122,7 @@ public class GameManager : MonoBehaviour
 
     private async UniTask PlayGameAsync(CancellationToken cancellationToken)
     {
-        for (var i = 0; i < TurnNum; i++)
+        for (var i = 0; i < Constants.TurnNum; i++)
         {
             foreach (var playerScoreBoard in _playerScoreBoards)
             {
@@ -132,7 +135,7 @@ public class GameManager : MonoBehaviour
     {
         playerScoreBoard.Highlight(true);
 
-        for (var i = 0; i < DiceNum; i++)
+        for (var i = 0; i < Constants.DiceNum; i++)
             _keepFlags[i] = false;
 
         var rollCount = 0;
@@ -250,7 +253,7 @@ public class GameManager : MonoBehaviour
     private async UniTask<List<int>> RollDicesAsync(CancellationToken cancellationToken)
     {
         var tasks = new List<UniTask>();
-        for (var i = 0; i < DiceNum; i++)
+        for (var i = 0; i < Constants.DiceNum; i++)
         {
             if (_keepFlags[i] == false)
                 tasks.Add(_dices[i].RollAsync(_diceRollForce, _diceRollTorque, _diceRollDuration, cancellationToken));
@@ -282,7 +285,7 @@ public class GameManager : MonoBehaviour
     private async UniTask MoveDicesToInitialPositionAsync(CancellationToken cancellationToken)
     {
         var tasks = new List<UniTask>();
-        for (var i = 0; i < DiceNum; i++)
+        for (var i = 0; i < Constants.DiceNum; i++)
         {
             var moveTask = MoveAsync(_dices[i].transform, _diceInitialPositions[i], _diceRecallDuration, cancellationToken);
             var rotateTask = _dices[i].RotateToNumberAsync(_diceRecallDuration, cancellationToken);
@@ -328,9 +331,9 @@ public class GameManager : MonoBehaviour
         // Yacht 점수 계산
         for (var i = 1; i <= 6; i++)
         {
-            if (counts[i] == DiceNum)
+            if (counts[i] == Constants.DiceNum)
             {
-                scoreDictionary[Combination.Yacht] = YatchScore;
+                scoreDictionary[Combination.Yacht] = Constants.YatchScore;
                 break;
             }
         }
@@ -339,7 +342,7 @@ public class GameManager : MonoBehaviour
         if ((counts[1] == 1 && counts[2] == 1 && counts[3] == 1 && counts[4] == 1 && counts[5] == 1) ||
             (counts[2] == 1 && counts[3] == 1 && counts[4] == 1 && counts[5] == 1 && counts[6] == 1))
         {
-            scoreDictionary[Combination.LargeStraight] = LargeStraightScore;
+            scoreDictionary[Combination.LargeStraight] = Constants.LargeStraightScore;
         }
 
         // Small Straight 점수 계산
@@ -347,7 +350,7 @@ public class GameManager : MonoBehaviour
             (counts[2] >= 1 && counts[3] >= 1 && counts[4] >= 1 && counts[5] >= 1) ||
             (counts[3] >= 1 && counts[4] >= 1 && counts[5] >= 1 && counts[6] >= 1))
         {
-            scoreDictionary[Combination.SmallStraight] = SmallStraightScore;
+            scoreDictionary[Combination.SmallStraight] = Constants.SmallStraightScore;
         }
 
         // FourOfAKind 점수 계산
