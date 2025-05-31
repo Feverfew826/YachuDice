@@ -3,20 +3,24 @@ using System.Threading;
 
 using Cysharp.Threading.Tasks;
 
-public class LocalGameManager : GameElementContainer
+using UnityEngine;
+
+public class LocalGameManager : MonoBehaviour
 {
+    [SerializeField] private GameElementContainer _gameElementContainer;
+
     public async UniTask<LocalGameResult> PlayGameAsync(LocalGameParameter gameParameters, CancellationToken cancellationToken)
     {
-        Initialize();
+        _gameElementContainer.Initialize();
 
-        using var linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, destroyCancellationToken, QuitCancellationToken);
+        using var linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, destroyCancellationToken, _gameElementContainer.QuitCancellationToken);
         try
         {
             await PlayGameAsync(linkedCancellationToken.Token);
         }
         catch (OperationCanceledException)
         {
-            if (QuitCancellationToken.IsCancellationRequested)
+            if (_gameElementContainer.QuitCancellationToken.IsCancellationRequested)
                 return new LocalGameResult();
             else
                 throw;
@@ -29,9 +33,9 @@ public class LocalGameManager : GameElementContainer
     {
         for (var i = 0; i < Constants.TurnNum; i++)
         {
-            foreach (var playerScoreBoard in _playerScoreBoards)
+            foreach (var playerScoreBoard in _gameElementContainer.PlayerScoreBoards)
             {
-                await PlayTrunAsync(playerScoreBoard, cancellationToken);
+                await GameManagerTemp.PlayTrunAsync(_gameElementContainer, playerScoreBoard, cancellationToken);
             }
         }
     }

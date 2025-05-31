@@ -15,8 +15,10 @@ using YachuDice.Utilities;
 
 public static class Constants
 {
+
     public const int DiceNum = 5;
     public const int TurnNum = 12;
+    public const int RollNum = 3;
 
     public const int YatchScore = 50;
     public const int LargeStraightScore = 30;
@@ -45,7 +47,6 @@ public static class Constants
 public class GameElementContainer : MonoBehaviour
 {
     [Header("Game Settings")]
-    [SerializeField] private int _rollNum = 3;
 
     [SerializeField] private string[] _playerNames;
 
@@ -77,6 +78,8 @@ public class GameElementContainer : MonoBehaviour
     private List<Vector3> _diceInitialPositions = new List<Vector3>();
 
     private CancellationTokenSource _quitCancellationTokenSource = new();
+
+    public IReadOnlyList<PlayerScoreBoard> PlayerScoreBoards => _playerScoreBoards;
 
     public CancellationToken QuitCancellationToken => _quitCancellationTokenSource.Token;
 
@@ -155,58 +158,7 @@ public class GameElementContainer : MonoBehaviour
         _rollButton.interactable = hasRollableDice;
     }
 
-    public async UniTask PlayTrunAsync(PlayerScoreBoard playerScoreBoard, CancellationToken cancellationToken)
-    {
-        playerScoreBoard.Highlight(true);
-
-        for (var i = 0; i < Constants.DiceNum; i++)
-            _keepFlags[i] = false;
-
-        var rollCount = 0;
-        while (true)
-        {
-            var hasRolled = rollCount > 0;
-            var canRollMore = rollCount < _rollNum;
-
-            // UI 업데이트
-            _rollButton.gameObject.SetActive(canRollMore);
-            if (canRollMore)
-                EventSystem.current.SetSelectedGameObject(_rollButton.gameObject);
-
-            UpdateConfirmButtons(playerScoreBoard, hasRolled);
-
-            var canKeep = hasRolled && canRollMore;
-            foreach (var button in _keepButtons)
-                button.gameObject.SetActive(canKeep);
-
-            var userChoice = await WaitUserChoiceRollOrConfirmAsync(cancellationToken);
-
-            // 입력 처리 동안 UI 요소 비활성화
-            MakeUIElementsUninteractable();
-
-            // 사용자 입력 처리(돌리거나, 멈추거나)
-            if (userChoice.choiceType == ChoiceType.Roll)
-            {
-                await ProcessUserChoiceRollAsync(playerScoreBoard, cancellationToken);
-
-                rollCount++;
-            }
-            else if (userChoice.choiceType == ChoiceType.Confirm)
-            {
-                ProcessUserChoiceConfirm(playerScoreBoard, userChoice.combination);
-
-                break;
-            }
-            else
-            {
-                Assert.IsTrue(false, "Unexpected user choice.");
-            }
-        }
-
-        playerScoreBoard.Highlight(false);
-    }
-
-    private void UpdateConfirmButtons(PlayerScoreBoard playerScoreBoard, bool hasRolled)
+    public void UpdateConfirmButtons(PlayerScoreBoard playerScoreBoard, bool hasRolled)
     {
         var canConfirm = hasRolled;
         if (canConfirm)
@@ -224,7 +176,7 @@ public class GameElementContainer : MonoBehaviour
         }
     }
 
-    private async UniTask<UserChoice> WaitUserChoiceRollOrConfirmAsync(CancellationToken cancellationToken)
+    public async UniTask<UserChoice> WaitUserChoiceRollOrConfirmAsync(CancellationToken cancellationToken)
     {
         using var whenAnyCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         var whenAnyCancellationToken = whenAnyCancellationTokenSource.Token;
@@ -246,7 +198,7 @@ public class GameElementContainer : MonoBehaviour
         }
     }
 
-    private void MakeUIElementsUninteractable()
+    public void MakeUIElementsUninteractable()
     {
         _rollButton.gameObject.SetActive(false);
 
@@ -257,24 +209,7 @@ public class GameElementContainer : MonoBehaviour
             button.gameObject.SetActive(false);
     }
 
-    private async UniTask ProcessUserChoiceRollAsync(PlayerScoreBoard playerScoreBoard, CancellationToken cancellationToken)
-    {
-        var rollResult = await RollDicesAsync(cancellationToken);
-
-        playerScoreBoard.SetPreviewScores(CalculateCombinationScores(rollResult));
-    }
-
-    private void ProcessUserChoiceConfirm(PlayerScoreBoard playerScoreBoard, Combination confirmedCombination)
-    {
-        foreach (var combination in Constants.AllCombinations)
-            playerScoreBoard.ResetText(combination);
-
-        var scores = CalculateCombinationScores(GetCurrentDiceValues());
-
-        playerScoreBoard.SetConfirmedScore(confirmedCombination, scores[confirmedCombination]);
-    }
-
-    private async UniTask<List<int>> RollDicesAsync(CancellationToken cancellationToken)
+    public async UniTask<List<int>> RollDicesAsync(CancellationToken cancellationToken)
     {
         var tasks = new List<UniTask>();
         for (var i = 0; i < Constants.DiceNum; i++)
@@ -298,7 +233,7 @@ public class GameElementContainer : MonoBehaviour
         return rollResult;
     }
 
-    private List<int> GetCurrentDiceValues()
+    public List<int> GetCurrentDiceValues()
     {
         var values = new List<int>();
         foreach (var dice in _dices)
@@ -332,85 +267,6 @@ public class GameElementContainer : MonoBehaviour
         targetTransform.position = destination;
     }
 
-    private static Dictionary<Combination, int> CalculateCombinationScores(List<int> numbers)
-    {
-        var scoreDictionary = new Dictionary<Combination, int>();
-        foreach (var jokbo in Constants.AllCombinations)
-            scoreDictionary.Add(jokbo, 0);
-
-        var counts = new Dictionary<int, int>();
-        for (var i = 1; i <= 6; i++)
-            counts.Add(i, numbers.Count(elmt => elmt == i));
-
-        var numbersSum = numbers.Sum();
-
-        // 주사위 눈 별 점수 계산
-        scoreDictionary[Combination.Aces] = counts[1] * 1;
-        scoreDictionary[Combination.Deuces] = counts[2] * 2;
-        scoreDictionary[Combination.Threes] = counts[3] * 3;
-        scoreDictionary[Combination.Fours] = counts[4] * 4;
-        scoreDictionary[Combination.Fives] = counts[5] * 5;
-        scoreDictionary[Combination.Sixes] = counts[6] * 6;
-
-        // Yacht 점수 계산
-        for (var i = 1; i <= 6; i++)
-        {
-            if (counts[i] == Constants.DiceNum)
-            {
-                scoreDictionary[Combination.Yacht] = Constants.YatchScore;
-                break;
-            }
-        }
-
-        // Large Straight 점수 계산
-        if ((counts[1] == 1 && counts[2] == 1 && counts[3] == 1 && counts[4] == 1 && counts[5] == 1) ||
-            (counts[2] == 1 && counts[3] == 1 && counts[4] == 1 && counts[5] == 1 && counts[6] == 1))
-        {
-            scoreDictionary[Combination.LargeStraight] = Constants.LargeStraightScore;
-        }
-
-        // Small Straight 점수 계산
-        if ((counts[1] >= 1 && counts[2] >= 1 && counts[3] >= 1 && counts[4] >= 1) ||
-            (counts[2] >= 1 && counts[3] >= 1 && counts[4] >= 1 && counts[5] >= 1) ||
-            (counts[3] >= 1 && counts[4] >= 1 && counts[5] >= 1 && counts[6] >= 1))
-        {
-            scoreDictionary[Combination.SmallStraight] = Constants.SmallStraightScore;
-        }
-
-        // FourOfAKind 점수 계산
-        foreach (var key in counts.Keys)
-        {
-            if (counts[key] >= 4)
-            {
-                scoreDictionary[Combination.FourOfAKind] = numbersSum;
-            }
-        }
-
-        // FullHouse 점수 계산
-        var threeOfAKind = false;
-        var pair = false;
-        foreach (var key in counts.Keys)
-        {
-            if (counts[key] == 3)
-            {
-                threeOfAKind = true;
-            }
-            if (counts[key] == 2)
-            {
-                pair = true;
-            }
-        }
-        if (threeOfAKind && pair)
-        {
-            scoreDictionary[Combination.FullHouse] = numbersSum;
-        }
-
-        // Choice 점수 계산
-        scoreDictionary[Combination.Choice] = numbersSum;
-
-        return scoreDictionary;
-    }
-
     private void OnPauseButton(Unit unit)
     {
         if (_pauseMenuParent.gameObject.activeInHierarchy)
@@ -441,15 +297,34 @@ public class GameElementContainer : MonoBehaviour
         }
     }
 
-    private struct UserChoice
+    public void UpdateRollButtonState(bool canRollMore)
     {
-        public ChoiceType choiceType;
-        public Combination combination;
+        _rollButton.gameObject.SetActive(canRollMore);
+        if (canRollMore)
+            EventSystem.current.SetSelectedGameObject(_rollButton.gameObject);
     }
 
-    private enum ChoiceType
+    public void UpdateKeepButtons(bool canKeep)
     {
-        Roll,
-        Confirm
+        foreach (var button in _keepButtons)
+            button.gameObject.SetActive(canKeep);
     }
+
+    public void ResetKeepFlags()
+    {
+        for (var i = 0; i < Constants.DiceNum; i++)
+            _keepFlags[i] = false;
+    }
+}
+
+public struct UserChoice
+{
+    public ChoiceType choiceType;
+    public Combination combination;
+}
+
+public enum ChoiceType
+{
+    Roll,
+    Confirm
 }

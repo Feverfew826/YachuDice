@@ -4,8 +4,12 @@ using Cysharp.Threading.Tasks;
 
 using Unity.Netcode;
 
-public class NetworkGameManager : GameElementContainer
+using UnityEngine;
+
+public class NetworkGameManager : MonoBehaviour
 {
+    [SerializeField] private GameElementContainer _gameElementContainer;
+
     public async UniTask<NetworkGameResult> PlayGameAsync(NetworkGameParameter gameParameters, CancellationToken cancellationToken)
     {
         var networkManager = NetworkManager.Singleton;
@@ -25,7 +29,7 @@ public class NetworkGameManager : GameElementContainer
 
     public async UniTask PlayGameAsHostAsync(CancellationToken cancellationToken)
     {
-        Initialize();
+        _gameElementContainer.Initialize();
 
         for (var i = 0; i < Constants.TurnNum; i++)
         {
@@ -36,7 +40,7 @@ public class NetworkGameManager : GameElementContainer
 
     public async UniTask PlayHostTurnAsync(CancellationToken cancellationToken)
     {
-        await PlayTrunAsync(_playerScoreBoards[0], cancellationToken);
+        await GameManagerTemp.PlayTrunAsync(_gameElementContainer, _gameElementContainer.PlayerScoreBoards[0], cancellationToken);
     }
 
     public async UniTask WaitClientTurnAsync(CancellationToken cancellationToken)
@@ -47,7 +51,7 @@ public class NetworkGameManager : GameElementContainer
 
     public async UniTask PlayGameAsClientAsync(CancellationToken cancellationToken)
     {
-        Initialize();
+        _gameElementContainer.Initialize();
 
         for (var i = 0; i < Constants.TurnNum; i++)
         {
