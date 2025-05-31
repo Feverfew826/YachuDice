@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -73,11 +72,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button _pauseMenuResumeButton;
     [SerializeField] private Button _pauseMenuQuitButton;
 
-    private List<PlayerScoreBoard> _playerScoreBoards = new List<PlayerScoreBoard>();
+    protected List<PlayerScoreBoard> _playerScoreBoards = new List<PlayerScoreBoard>();
     private ReactiveCollection<bool> _keepFlags = new ReactiveCollection<bool>();
     private List<Vector3> _diceInitialPositions = new List<Vector3>();
 
     private CancellationTokenSource _quitCancellationTokenSource = new();
+
+    public CancellationToken QuitCancellationToken => _quitCancellationTokenSource.Token;
 
     private void Update()
     {
@@ -93,43 +94,58 @@ public class GameManager : MonoBehaviour
         Assert.AreEqual(_confirmButtons.Length, Constants.AllCombinations.Count, $"Should set {Constants.AllCombinations.Count} confirm buttons.");
     }
 
-    public async UniTask<GameResult> PlayGameAsync(GameParameter gameParameters, CancellationToken cancellationToken)
+    public void InitializePlayerBoard()
     {
-
         foreach (var playerName in _playerNames)
         {
             var newPlayer = Instantiate(_playerPrefab, _playerParent);
             newPlayer.SetName(playerName);
             _playerScoreBoards.Add(newPlayer);
         }
+    }
 
+    public void InitializeDiceInitialPosition()
+    {
         foreach (var dice in _dices)
         {
             _diceInitialPositions.Add(dice.transform.position);
+        }
+    }
+
+    public void InitilaizeDiceKeepFlags()
+    {
+        foreach (var dice in _dices)
+        {
             _keepFlags.Add(false);
         }
 
         _keepFlags.ObserveReplace().Subscribe(data => _keepImages[data.Index].gameObject.SetActive(data.NewValue)).AddTo(this);
+    }
 
+    public void InitializeDiceKeepButtons()
+    {
         var buttonClicks = _keepButtons.Select(elmt => elmt.OnClickAsObservable());
         buttonClicks.Zip(Enumerable.Range(0, Constants.DiceNum), (buttonClick, index) => buttonClick.Subscribe(_ => OnKeepButtonChanged(index)).AddTo(this)).Consume();
+    }
 
+    public void InitializeQuitButton()
+    {
         _quitButton.OnClickAsObservable().Subscribe(OnPauseButton).AddTo(this);
+    }
 
-        using var linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, destroyCancellationToken, _quitCancellationTokenSource.Token);
-        try
-        {
-            await PlayGameAsync(linkedCancellationToken.Token);
-        }
-        catch (OperationCanceledException)
-        {
-            if (_quitCancellationTokenSource.IsCancellationRequested)
-                return new GameResult();
-            else
-                throw;
-        }
+    public void Initialize()
+    {
+        DoAssertion();
 
-        return new GameResult();
+        InitializePlayerBoard();
+
+        InitializeDiceInitialPosition();
+
+        InitilaizeDiceKeepFlags();
+
+        InitializeDiceKeepButtons();
+
+        InitializeQuitButton();
     }
 
     public void OnKeepButtonChanged(int keepButtonIndex)
@@ -139,18 +155,7 @@ public class GameManager : MonoBehaviour
         _rollButton.interactable = hasRollableDice;
     }
 
-    private async UniTask PlayGameAsync(CancellationToken cancellationToken)
-    {
-        for (var i = 0; i < Constants.TurnNum; i++)
-        {
-            foreach (var playerScoreBoard in _playerScoreBoards)
-            {
-                await PlayTrunAsync(playerScoreBoard, cancellationToken);
-            }
-        }
-    }
-
-    private async UniTask PlayTrunAsync(PlayerScoreBoard playerScoreBoard, CancellationToken cancellationToken)
+    public async UniTask PlayTrunAsync(PlayerScoreBoard playerScoreBoard, CancellationToken cancellationToken)
     {
         playerScoreBoard.Highlight(true);
 
@@ -327,7 +332,7 @@ public class GameManager : MonoBehaviour
         targetTransform.position = destination;
     }
 
-    private Dictionary<Combination, int> CalculateCombinationScores(List<int> numbers)
+    private static Dictionary<Combination, int> CalculateCombinationScores(List<int> numbers)
     {
         var scoreDictionary = new Dictionary<Combination, int>();
         foreach (var jokbo in Constants.AllCombinations)
@@ -446,15 +451,5 @@ public class GameManager : MonoBehaviour
     {
         Roll,
         Confirm
-    }
-
-    public struct GameParameter
-    {
-
-    }
-
-    public struct GameResult
-    {
-
     }
 }

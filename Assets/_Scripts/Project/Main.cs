@@ -74,7 +74,7 @@ public static class Main
                 if (titleSceneUserInputResult.userInput == TitleSceneManager.UserInputType.PlayLocalGame)
                 {
                     await SceneManager.LoadSceneAsync("GameScene");
-                    var gameManager = SceneManager.GetActiveScene().GetComponent<GameManager>();
+                    var gameManager = SceneManager.GetActiveScene().GetComponent<LocalGameManager>();
                     var gameResult = await gameManager.PlayGameAsync(new GameManager.GameParameter(), cancellationToken);
                     await SceneManager.LoadSceneAsync("TitleScene");
                 }

@@ -25,6 +25,8 @@ public class NetworkGameManager : GameManager
 
     public async UniTask PlayGameAsHostAsync(CancellationToken cancellationToken)
     {
+        Initialize();
+
         for (var i = 0; i < Constants.TurnNum; i++)
         {
             await PlayHostTurnAsync(cancellationToken);
@@ -34,8 +36,7 @@ public class NetworkGameManager : GameManager
 
     public async UniTask PlayHostTurnAsync(CancellationToken cancellationToken)
     {
-        // Simulate host turn logic
-        await UniTask.Delay(10000, cancellationToken: cancellationToken);
+        await PlayTrunAsync(_playerScoreBoards[0], cancellationToken);
     }
 
     public async UniTask WaitClientTurnAsync(CancellationToken cancellationToken)
@@ -46,6 +47,8 @@ public class NetworkGameManager : GameManager
 
     public async UniTask PlayGameAsClientAsync(CancellationToken cancellationToken)
     {
+        Initialize();
+
         for (var i = 0; i < Constants.TurnNum; i++)
         {
             await WaitHostTurnAsync(cancellationToken);
