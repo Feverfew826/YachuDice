@@ -25,7 +25,7 @@ public static class GameManagerTemp
             gameElementContainer.UpdateConfirmButtons(playerScoreBoard, hasRolled);
 
             var canKeep = hasRolled && canRollMore;
-            gameElementContainer.UpdateKeepButtons(canKeep);
+            gameElementContainer.UpdateKeepButtons(canKeep, true);
 
             var userChoice = await gameElementContainer.WaitUserChoiceRollOrConfirmAsync(cancellationToken);
 
@@ -35,7 +35,9 @@ public static class GameManagerTemp
             // 사용자 입력 처리(돌리거나, 멈추거나)
             if (userChoice.choiceType == ChoiceType.Roll)
             {
-                await ProcessUserChoiceRollAsync(gameElementContainer, playerScoreBoard, cancellationToken);
+                var rollResult = await gameElementContainer.RollDicesAsync(cancellationToken);
+
+                playerScoreBoard.SetPreviewScores(CalculateCombinationScores(rollResult));
 
                 rollCount++;
             }
@@ -54,16 +56,7 @@ public static class GameManagerTemp
         playerScoreBoard.Highlight(false);
     }
 
-
-
-    private static async UniTask ProcessUserChoiceRollAsync(GameElementContainer gameElementContainer, PlayerScoreBoard playerScoreBoard, CancellationToken cancellationToken)
-    {
-        var rollResult = await gameElementContainer.RollDicesAsync(cancellationToken);
-
-        playerScoreBoard.SetPreviewScores(CalculateCombinationScores(rollResult));
-    }
-
-    private static void ProcessUserChoiceConfirm(GameElementContainer gameElementContainer, PlayerScoreBoard playerScoreBoard, Combination confirmedCombination)
+    public static (Combination combination, int score) ProcessUserChoiceConfirm(GameElementContainer gameElementContainer, PlayerScoreBoard playerScoreBoard, Combination confirmedCombination)
     {
         foreach (var combination in Constants.AllCombinations)
             playerScoreBoard.ResetText(combination);
@@ -71,9 +64,11 @@ public static class GameManagerTemp
         var scores = CalculateCombinationScores(gameElementContainer.GetCurrentDiceValues());
 
         playerScoreBoard.SetConfirmedScore(confirmedCombination, scores[confirmedCombination]);
+
+        return (confirmedCombination, scores[confirmedCombination]);
     }
 
-    private static Dictionary<Combination, int> CalculateCombinationScores(List<int> numbers)
+    public static Dictionary<Combination, int> CalculateCombinationScores(List<int> numbers)
     {
         var scoreDictionary = new Dictionary<Combination, int>();
         foreach (var jokbo in Constants.AllCombinations)

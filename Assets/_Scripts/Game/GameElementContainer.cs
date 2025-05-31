@@ -80,6 +80,9 @@ public class GameElementContainer : MonoBehaviour
     private CancellationTokenSource _quitCancellationTokenSource = new();
 
     public IReadOnlyList<PlayerScoreBoard> PlayerScoreBoards => _playerScoreBoards;
+    public Button[] KeepButtons => _keepButtons;
+    public IList<bool> KeepFlags => _keepFlags;
+    public Image[] KeepImages => _keepImages;
 
     public CancellationToken QuitCancellationToken => _quitCancellationTokenSource.Token;
 
@@ -304,10 +307,13 @@ public class GameElementContainer : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(_rollButton.gameObject);
     }
 
-    public void UpdateKeepButtons(bool canKeep)
+    public void UpdateKeepButtons(bool active, bool interactable)
     {
         foreach (var button in _keepButtons)
-            button.gameObject.SetActive(canKeep);
+            button.gameObject.SetActive(active);
+
+        foreach (var button in _keepButtons)
+            button.interactable = interactable;
     }
 
     public void ResetKeepFlags()

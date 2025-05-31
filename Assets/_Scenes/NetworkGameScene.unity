@@ -1307,6 +1307,7 @@ GameObject:
   m_Component:
   - component: {fileID: 361572073}
   - component: {fileID: 361572072}
+  - component: {fileID: 361572077}
   - component: {fileID: 361572076}
   - component: {fileID: 361572075}
   m_Layer: 0
@@ -1497,7 +1498,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb1a99d1cf261b54d8687fa309d67765, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   _gameElementContainer: {fileID: 361572072}
+--- !u!114 &361572077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361572071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1218766152
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &409045211
 GameObject:
   m_ObjectHideFlags: 0
@@ -1584,7 +1611,6 @@ GameObject:
   - component: {fileID: 431222157}
   - component: {fileID: 431222156}
   - component: {fileID: 431222155}
-  - component: {fileID: 431222158}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -1678,19 +1704,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &431222158
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 431222154}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb1a99d1cf261b54d8687fa309d67765, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _gameElementContainer: {fileID: 0}
 --- !u!1001 &457873313
 PrefabInstance:
   m_ObjectHideFlags: 0
