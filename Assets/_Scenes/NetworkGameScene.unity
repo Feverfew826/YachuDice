@@ -1307,6 +1307,7 @@ GameObject:
   m_Component:
   - component: {fileID: 361572073}
   - component: {fileID: 361572072}
+  - component: {fileID: 361572076}
   - component: {fileID: 361572075}
   m_Layer: 0
   m_Name: GameManager
@@ -1327,7 +1328,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71983dd7fd56d7c429df9af7ff73b840, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rollNum: 3
   _playerNames:
   - Player1
   - Player2
@@ -1485,6 +1485,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &361572076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361572071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb1a99d1cf261b54d8687fa309d67765, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gameElementContainer: {fileID: 361572072}
 --- !u!1 &409045211
 GameObject:
   m_ObjectHideFlags: 0
@@ -1677,23 +1690,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb1a99d1cf261b54d8687fa309d67765, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rollNum: 3
-  _playerNames: []
-  _dices: []
-  _playerParent: {fileID: 0}
-  _playerPrefab: {fileID: 0}
-  _keepImages: []
-  _keepButtons: []
-  _confirmButtons: []
-  _rollButton: {fileID: 0}
-  _quitButton: {fileID: 0}
-  _diceRollDuration: 0
-  _diceRollForce: 0
-  _diceRollTorque: 0
-  _diceRecallDuration: 0
-  _pauseMenuParent: {fileID: 0}
-  _pauseMenuResumeButton: {fileID: 0}
-  _pauseMenuQuitButton: {fileID: 0}
+  _gameElementContainer: {fileID: 0}
 --- !u!1001 &457873313
 PrefabInstance:
   m_ObjectHideFlags: 0
