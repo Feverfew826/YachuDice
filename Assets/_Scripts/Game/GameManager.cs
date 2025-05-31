@@ -22,6 +22,25 @@ public static class Constants
     public const int YatchScore = 50;
     public const int LargeStraightScore = 30;
     public const int SmallStraightScore = 15;
+
+    public static IReadOnlyList<Combination> AllCombinations
+    {
+        get
+        {
+            if (_allCombinations == null)
+                InitializeAllCombinations();
+            return _allCombinations;
+        }
+    }
+
+    private static List<Combination> _allCombinations;
+
+    private static void InitializeAllCombinations()
+    {
+        _allCombinations = new List<Combination>();
+        foreach (Combination combination in System.Enum.GetValues(typeof(Combination)))
+            _allCombinations.Add(combination);
+    }
 }
 
 public class GameManager : MonoBehaviour
@@ -56,7 +75,6 @@ public class GameManager : MonoBehaviour
 
     private List<PlayerScoreBoard> _playerScoreBoards = new List<PlayerScoreBoard>();
     private ReactiveCollection<bool> _keepFlags = new ReactiveCollection<bool>();
-    private List<Combination> _allCombinations = new List<Combination>();
     private List<Vector3> _diceInitialPositions = new List<Vector3>();
 
     private CancellationTokenSource _quitCancellationTokenSource = new();
@@ -67,15 +85,16 @@ public class GameManager : MonoBehaviour
             OnPauseButton(Unit.Default);
     }
 
-    public async UniTask<GameResult> PlayGameAsync(GameParameter gameParameters, CancellationToken cancellationToken)
+    public void DoAssertion()
     {
-        foreach (Combination combination in System.Enum.GetValues(typeof(Combination)))
-            _allCombinations.Add(combination);
-
         Assert.AreEqual(_dices.Length, Constants.DiceNum, $"Should set {Constants.DiceNum} dices.");
         Assert.AreEqual(_keepImages.Length, Constants.DiceNum, $"Should set {Constants.DiceNum} keep images.");
         Assert.AreEqual(_keepButtons.Length, Constants.DiceNum, $"Should set {Constants.DiceNum} keep buttons.");
-        Assert.AreEqual(_confirmButtons.Length, _allCombinations.Count, $"Should set {_allCombinations.Count} confirm buttons.");
+        Assert.AreEqual(_confirmButtons.Length, Constants.AllCombinations.Count, $"Should set {Constants.AllCombinations.Count} confirm buttons.");
+    }
+
+    public async UniTask<GameResult> PlayGameAsync(GameParameter gameParameters, CancellationToken cancellationToken)
+    {
 
         foreach (var playerName in _playerNames)
         {
@@ -187,7 +206,7 @@ public class GameManager : MonoBehaviour
         var canConfirm = hasRolled;
         if (canConfirm)
         {
-            foreach (var combination in _allCombinations)
+            foreach (var combination in Constants.AllCombinations)
             {
                 var index = (int)combination;
                 _confirmButtons[index].interactable = playerScoreBoard.HasConfirmedScore(combination) == false;
@@ -242,7 +261,7 @@ public class GameManager : MonoBehaviour
 
     private void ProcessUserChoiceConfirm(PlayerScoreBoard playerScoreBoard, Combination confirmedCombination)
     {
-        foreach (var combination in _allCombinations)
+        foreach (var combination in Constants.AllCombinations)
             playerScoreBoard.ResetText(combination);
 
         var scores = CalculateCombinationScores(GetCurrentDiceValues());
@@ -311,7 +330,7 @@ public class GameManager : MonoBehaviour
     private Dictionary<Combination, int> CalculateCombinationScores(List<int> numbers)
     {
         var scoreDictionary = new Dictionary<Combination, int>();
-        foreach (var jokbo in _allCombinations)
+        foreach (var jokbo in Constants.AllCombinations)
             scoreDictionary.Add(jokbo, 0);
 
         var counts = new Dictionary<int, int>();
