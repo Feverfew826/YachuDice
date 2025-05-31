@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 
 using Unity.Netcode;
 
-public class NetworkGameManager : GameManager
+public class NetworkGameManager : GameElementContainer
 {
     public async UniTask<NetworkGameResult> PlayGameAsync(NetworkGameParameter gameParameters, CancellationToken cancellationToken)
     {

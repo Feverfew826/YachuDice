@@ -42,7 +42,7 @@ public static class Constants
     }
 }
 
-public class GameManager : MonoBehaviour
+public class GameElementContainer : MonoBehaviour
 {
     [Header("Game Settings")]
     [SerializeField] private int _rollNum = 3;

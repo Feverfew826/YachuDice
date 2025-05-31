@@ -3,7 +3,7 @@ using System.Threading;
 
 using Cysharp.Threading.Tasks;
 
-public class LocalGameManager : GameManager
+public class LocalGameManager : GameElementContainer
 {
     public async UniTask<LocalGameResult> PlayGameAsync(LocalGameParameter gameParameters, CancellationToken cancellationToken)
     {

@@ -75,7 +75,7 @@ public static class Main
                 {
                     await SceneManager.LoadSceneAsync("GameScene");
                     var gameManager = SceneManager.GetActiveScene().GetComponent<LocalGameManager>();
-                    var gameResult = await gameManager.PlayGameAsync(new GameManager.GameParameter(), cancellationToken);
+                    var gameResult = await gameManager.PlayGameAsync(new LocalGameManager.LocalGameParameter(), cancellationToken);
                     await SceneManager.LoadSceneAsync("TitleScene");
                 }
                 else if (titleSceneUserInputResult.userInput == TitleSceneManager.UserInputType.PlayNetworkGameAsHost)
@@ -84,8 +84,8 @@ public static class Main
                     var isHostStarted = NetworkManager.Singleton.StartHost();
                     if (isHostStarted)
                     {
-                        var gameManager = SceneManager.GetActiveScene().GetComponent<GameManager>();
-                        var gameResult = await gameManager.PlayGameAsync(new GameManager.GameParameter(), cancellationToken);
+                        var gameManager = SceneManager.GetActiveScene().GetComponent<NetworkGameManager>();
+                        var gameResult = await gameManager.PlayGameAsync(new NetworkGameManager.NetworkGameParameter(), cancellationToken);
                         NetworkManager.Singleton.Shutdown();
                     }
                     await SceneManager.LoadSceneAsync("TitleScene");
@@ -96,8 +96,8 @@ public static class Main
                     var isClientStarted = NetworkManager.Singleton.StartClient();
                     if (isClientStarted)
                     {
-                        var gameManager = SceneManager.GetActiveScene().GetComponent<GameManager>();
-                        await UniTask.Delay(System.TimeSpan.FromSeconds(60), cancellationToken: cancellationToken);
+                        var gameManager = SceneManager.GetActiveScene().GetComponent<NetworkGameManager>();
+                        var gameResult = await gameManager.PlayGameAsync(new NetworkGameManager.NetworkGameParameter(), cancellationToken);
                         NetworkManager.Singleton.Shutdown();
                     }
                     await SceneManager.LoadSceneAsync("TitleScene");
@@ -128,9 +128,9 @@ public static class Main
 
                 Containers.ProjectContext.Get<IEnvironment>().ExitGame();
             }
-            else if (rootGameObjects.TryGetComponent<GameManager>(out var gameManager))
+            else if (rootGameObjects.TryGetComponent<LocalGameManager>(out var gameManager))
             {
-                await gameManager.PlayGameAsync(new GameManager.GameParameter(), Application.exitCancellationToken);
+                await gameManager.PlayGameAsync(new LocalGameManager.LocalGameParameter(), Application.exitCancellationToken);
 
                 Containers.ProjectContext.Get<IEnvironment>().ExitGame();
             }
