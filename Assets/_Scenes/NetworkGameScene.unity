@@ -773,6 +773,9 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7796579106374948867, guid: 82da63bfdacdcb044b2f34832e3c8789, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 287495581}
+    - targetCorrespondingSourceObject: {fileID: 7796579106374948867, guid: 82da63bfdacdcb044b2f34832e3c8789, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 287495579}
     - targetCorrespondingSourceObject: {fileID: 7796579106374948867, guid: 82da63bfdacdcb044b2f34832e3c8789, type: 3}
       insertIndex: -1
@@ -853,10 +856,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  NetworkRigidbodyBaseExpanded: 0
+  NetworkRigidbodyBaseExpanded: 1
   UseRigidBodyForMotion: 0
-  AutoUpdateKinematicState: 1
+  AutoUpdateKinematicState: 0
   AutoSetKinematicOnDespawn: 1
+--- !u!114 &287495581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 287495578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 478945270
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &289247962
 GameObject:
   m_ObjectHideFlags: 0
@@ -1036,6 +1064,9 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7796579106374948867, guid: dc77b9ccfa9178746bc9e71b051a5405, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 312402944}
+    - targetCorrespondingSourceObject: {fileID: 7796579106374948867, guid: dc77b9ccfa9178746bc9e71b051a5405, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 312402942}
     - targetCorrespondingSourceObject: {fileID: 7796579106374948867, guid: dc77b9ccfa9178746bc9e71b051a5405, type: 3}
       insertIndex: -1
@@ -1118,8 +1149,33 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   NetworkRigidbodyBaseExpanded: 0
   UseRigidBodyForMotion: 0
-  AutoUpdateKinematicState: 1
+  AutoUpdateKinematicState: 0
   AutoSetKinematicOnDespawn: 1
+--- !u!114 &312402944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312402941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1055383977
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &331925753
 GameObject:
   m_ObjectHideFlags: 0
@@ -3862,6 +3918,9 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7796579106374948867, guid: 3f814a91a5b34174bbca0cbfb9b37d50, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 1129359453}
+    - targetCorrespondingSourceObject: {fileID: 7796579106374948867, guid: 3f814a91a5b34174bbca0cbfb9b37d50, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 1129359451}
     - targetCorrespondingSourceObject: {fileID: 7796579106374948867, guid: 3f814a91a5b34174bbca0cbfb9b37d50, type: 3}
       insertIndex: -1
@@ -3944,8 +4003,33 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   NetworkRigidbodyBaseExpanded: 0
   UseRigidBodyForMotion: 0
-  AutoUpdateKinematicState: 1
+  AutoUpdateKinematicState: 0
   AutoSetKinematicOnDespawn: 1
+--- !u!114 &1129359453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1129359450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1118063021
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &1171331282
 GameObject:
   m_ObjectHideFlags: 0
@@ -5144,6 +5228,9 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7796579106374948867, guid: d91f837492f3a744096f607b34ea341e, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 1631792220}
+    - targetCorrespondingSourceObject: {fileID: 7796579106374948867, guid: d91f837492f3a744096f607b34ea341e, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 1631792218}
     - targetCorrespondingSourceObject: {fileID: 7796579106374948867, guid: d91f837492f3a744096f607b34ea341e, type: 3}
       insertIndex: -1
@@ -5226,8 +5313,33 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   NetworkRigidbodyBaseExpanded: 0
   UseRigidBodyForMotion: 0
-  AutoUpdateKinematicState: 1
+  AutoUpdateKinematicState: 0
   AutoSetKinematicOnDespawn: 1
+--- !u!114 &1631792220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1631792217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 3270968879
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &1793348129
 GameObject:
   m_ObjectHideFlags: 0
@@ -6231,6 +6343,9 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6853942160864684402, guid: f6eb6d1f6d4d82f4d89419168317ab20, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 3567534466588537958}
+    - targetCorrespondingSourceObject: {fileID: 6853942160864684402, guid: f6eb6d1f6d4d82f4d89419168317ab20, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 3567534466588537956}
     - targetCorrespondingSourceObject: {fileID: 6853942160864684402, guid: f6eb6d1f6d4d82f4d89419168317ab20, type: 3}
       insertIndex: -1
@@ -6313,8 +6428,33 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   NetworkRigidbodyBaseExpanded: 0
   UseRigidBodyForMotion: 0
-  AutoUpdateKinematicState: 1
+  AutoUpdateKinematicState: 0
   AutoSetKinematicOnDespawn: 1
+--- !u!114 &3567534466588537958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3567534466588537955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1308069052
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1001 &3988578265104563298
 PrefabInstance:
   m_ObjectHideFlags: 0
