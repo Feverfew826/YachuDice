@@ -60,8 +60,8 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButtonDown("Cancel"))
-            OnQuitButton(Unit.Default);
+        if (Input.GetButtonDown("Pause"))
+            OnPauseButton(Unit.Default);
     }
 
     public async UniTask<GameResult> PlayGameAsync(GameParameter gameParameters, CancellationToken cancellationToken)
@@ -92,7 +92,7 @@ public class GameManager : MonoBehaviour
         var buttonClicks = _keepButtons.Select(elmt => elmt.OnClickAsObservable());
         buttonClicks.Zip(Enumerable.Range(0, DiceNum), (buttonClick, index) => buttonClick.Subscribe(_ => OnKeepButtonChanged(index)).AddTo(this)).Consume();
 
-        _quitButton.OnClickAsObservable().Subscribe(OnQuitButton).AddTo(this);
+        _quitButton.OnClickAsObservable().Subscribe(OnPauseButton).AddTo(this);
 
         using var linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, destroyCancellationToken, _quitCancellationTokenSource.Token);
         try
@@ -384,7 +384,7 @@ public class GameManager : MonoBehaviour
         return scoreDictionary;
     }
 
-    private void OnQuitButton(Unit unit)
+    private void OnPauseButton(Unit unit)
     {
         if (_pauseMenuParent.gameObject.activeInHierarchy)
         {
