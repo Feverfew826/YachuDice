@@ -15,6 +15,16 @@ MonoBehaviour:
   m_GroupName: SelfContainedPcOrConsoleLocalGroup
   m_GUID: d0e3483822692744ba7603b60dce6adf
   m_SerializeEntries:
+  - m_GUID: 8a26c389ef308084e93ea8832271cf13
+    m_Address: JoinCodeInputModal.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 92c73fec619c11944a1cba0cfa13ad44
+    m_Address: JoinCodeDisplayModal.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e18166842cfa7e74e84873b8fba8ae01
     m_Address: QualitySettings.prefab
     m_ReadOnly: 0

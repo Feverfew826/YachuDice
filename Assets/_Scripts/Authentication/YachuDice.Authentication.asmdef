@@ -1,0 +1,19 @@
+{
+    "name": "YachuDice.Authentication",
+    "rootNamespace": "YachuDice.Authentication",
+    "references": [
+        "GUID:fe25561d224ed4743af4c60938a59d0b",
+        "GUID:5540e30183c82e84b954c033c388e06c",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:08ed834196f591a43a2bba24226d94af"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

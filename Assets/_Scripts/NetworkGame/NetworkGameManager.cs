@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using UniRx;
 
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -25,7 +26,11 @@ public class NetworkGameManager : NetworkBehaviour
     public async UniTask<NetworkGameResult> PlayGameAsync(NetworkGameParameter gameParameters, CancellationToken cancellationToken)
     {
         var networkManager = NetworkManager.Singleton;
-        NetworkGameManagerHelpers.AutoConnectIfNotStartedNetwork(networkManager);
+        var unityTransport = networkManager.GetComponent<UnityTransport>();
+
+        var autoConnectResult = await NetworkGameManagerHelpers.AutoConnectIfNotStartedNetworkAsync(networkManager, unityTransport, cancellationToken);
+        if (autoConnectResult == false)
+            return new NetworkGameResult();
 
         await UniTask.WaitUntil(() => networkManager.IsConnectedClient, cancellationToken: cancellationToken);
 
