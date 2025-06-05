@@ -7,12 +7,13 @@ using TMPro;
 
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace YachuDice.Relay
 {
     public class JoinCodeDisplayModal : MonoBehaviour
     {
-        public static async UniTask OpenJoinCodeDisplayModalAsync(string joinCode, Func<bool> predicate, CancellationToken cancellationToken)
+        public static async UniTask<bool> OpenJoinCodeDisplayModalAsync(string joinCode, Func<bool> predicate, CancellationToken cancellationToken)
         {
             var selectionBackedup = EventSystem.current.currentSelectedGameObject;
 
@@ -22,11 +23,19 @@ namespace YachuDice.Relay
 
             joinCodeDisplayModal._joinCodeText.text = joinCode;
 
-            await UniTask.WaitUntil(predicate, cancellationToken: cancellationToken);
+            var waitTask = UniTask.WaitUntil(predicate, cancellationToken: cancellationToken);
+            var quitButtonTask = joinCodeDisplayModal._quitButton.OnClickAsync(cancellationToken);
+            var result = await Utilities.Utilities.WhenAnyWithLoserCancellationAsync(waitTask, quitButtonTask);
 
             EventSystem.current.SetSelectedGameObject(selectionBackedup);
+
+            if (result == 0)
+                return true;
+            else
+                return false;
         }
 
         [SerializeField] private TextMeshProUGUI _joinCodeText;
+        [SerializeField] private Button _quitButton;
     }
 }

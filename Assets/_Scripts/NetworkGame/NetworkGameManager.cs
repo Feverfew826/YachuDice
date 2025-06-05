@@ -28,7 +28,7 @@ public class NetworkGameManager : NetworkBehaviour
         var networkManager = NetworkManager.Singleton;
         var unityTransport = networkManager.GetComponent<UnityTransport>();
 
-        var autoConnectResult = await NetworkGameManagerHelpers.AutoConnectIfNotStartedNetworkAsync(networkManager, unityTransport, cancellationToken);
+        var autoConnectResult = await AuthenticatedRelayNetworkFacade.AutoConnectIfNotStartedNetworkAsync(networkManager, unityTransport, cancellationToken);
         if (autoConnectResult == false)
             return new NetworkGameResult();
 
@@ -344,7 +344,7 @@ public class NetworkGameManager : NetworkBehaviour
 
     private void OnGUI()
     {
-        NetworkGameManagerHelpers.ShowNetworkStatus();
+        AuthenticatedRelayNetworkFacade.ShowNetworkStatus();
     }
 }
 

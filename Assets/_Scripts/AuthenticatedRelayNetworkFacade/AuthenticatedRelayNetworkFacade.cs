@@ -9,9 +9,11 @@ using Unity.Netcode.Transports.UTP;
 
 using UnityEngine;
 
+using YachuDice.Authentication;
 using YachuDice.Relay;
+using YachuDice.UnityServices;
 
-internal static class NetworkGameManagerHelpers
+public static class AuthenticatedRelayNetworkFacade
 {
     private const int MaxConnections = 2;
 
@@ -22,17 +24,11 @@ internal static class NetworkGameManagerHelpers
             var mppmTag = CurrentPlayer.ReadOnlyTags();
             if (mppmTag.Contains("Host"))
             {
-                var startHostResult = await StartHostAsync(networkManager, unityTransport, cancellationToken);
-                if (startHostResult == false)
-                    return false;
-
-                await JoinCodeDisplayModal.OpenJoinCodeDisplayModalAsync(RelayHost.JoinCode, () => networkManager.ConnectedClients.Count > 1, cancellationToken);
-                return true;
+                return await StartHostThenShowJoinCodeAsync(networkManager, unityTransport, cancellationToken);
             }
             else if (mppmTag.Contains("Client"))
             {
-                var joinCode = await JoinCodeInputModal.OpenJoinCodeInputModalAsync(cancellationToken);
-                return await StartClientAsync(networkManager, unityTransport, joinCode, cancellationToken);
+                return await RetrieveJoinCodeThenConnectToHostAsync(networkManager, unityTransport, cancellationToken);
             }
             else
             {
@@ -45,8 +41,45 @@ internal static class NetworkGameManagerHelpers
         }
     }
 
+    public static async UniTask<bool> StartHostThenShowJoinCodeAsync(NetworkManager networkManager, UnityTransport unityTransport, CancellationToken cancellationToken)
+    {
+        var startHostResult = await StartHostAsync(networkManager, unityTransport, cancellationToken);
+        if (startHostResult == false)
+            return false;
+
+        return await JoinCodeDisplayModal.OpenJoinCodeDisplayModalAsync(RelayHost.JoinCode, () => networkManager.ConnectedClients.Count > 1, cancellationToken);
+    }
+
+    public static async UniTask<bool> RetrieveJoinCodeThenConnectToHostAsync(NetworkManager networkManager, UnityTransport unityTransport, CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            var joinCode = await JoinCodeInputModal.OpenJoinCodeInputModalAsync(cancellationToken);
+            if (joinCode == null)
+                return false;
+
+            var startClientResult = await StartClientAsync(networkManager, unityTransport, joinCode, cancellationToken);
+            if (startClientResult)
+                return true;
+        }
+    }
+
     private static async UniTask<bool> StartHostAsync(NetworkManager networkManager, UnityTransport unityTransport, CancellationToken cancellationToken)
     {
+        if (UnityServices.IsInitialized == false)
+        {
+            var unityServicesInitializationResult = await UnityServices.InitializeAsync(cancellationToken);
+            if (unityServicesInitializationResult == false)
+                return false;
+        }
+
+        if (Authentication.PlayerId == null)
+        {
+            var authenticationResult = await Authentication.SignInAnonymouslyAsync(cancellationToken);
+            if (authenticationResult == false)
+                return false;
+        }
+
         if (RelayHost.IsAllocationCreated == false)
         {
             var createAllocationResult = await RelayHost.CreateAllocationAsync(MaxConnections, cancellationToken);
@@ -68,6 +101,20 @@ internal static class NetworkGameManagerHelpers
 
     private static async UniTask<bool> StartClientAsync(NetworkManager networkManager, UnityTransport unityTransport, string joinCode, CancellationToken cancellationToken)
     {
+        if (UnityServices.IsInitialized == false)
+        {
+            var unityServicesInitializationResult = await UnityServices.InitializeAsync(cancellationToken);
+            if (unityServicesInitializationResult == false)
+                return false;
+        }
+
+        if (Authentication.PlayerId == null)
+        {
+            var authenticationResult = await Authentication.SignInAnonymouslyAsync(cancellationToken);
+            if (authenticationResult == false)
+                return false;
+        }
+
         if (RelayClient.IsAllocationJoined == false)
         {
             var createAllocationResult = await RelayClient.JoinAllocationAsync(joinCode, cancellationToken);

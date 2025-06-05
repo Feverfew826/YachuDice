@@ -99,6 +99,20 @@ namespace YachuDice.Utilities
             return result;
         }
 
+        public static async UniTask<int> WhenAnyWithLoserCancellationAsync(params UniTask[] tasks)
+        {
+            using var whenAnyCancellationTokenSource = new CancellationTokenSource();
+
+            var whenAnyCancellableTasks = new UniTask[tasks.Length];
+            for (var i = 0; i < tasks.Length; i++)
+                whenAnyCancellableTasks[i] = tasks[i].AttachExternalCancellation(whenAnyCancellationTokenSource.Token);
+
+            var result = await UniTask.WhenAny(whenAnyCancellableTasks);
+            whenAnyCancellationTokenSource.Cancel();
+
+            return result;
+        }
+
         // 참고: https://github.com/morelinq/MoreLINQ/blob/master/MoreLinq/Consume.cs
         public static void Consume<T>(this IEnumerable<T> source)
         {

@@ -28,9 +28,8 @@ namespace YachuDice.Relay
         {
             if (Authentication.Authentication.PlayerId == null)
             {
-                var authenticationResult = await Authentication.Authentication.AuthenticatingAPlayerAsync(cancellationToken);
-                if (authenticationResult == false)
-                    return false;
+                await Utilities.ErrorMessageModal.OpenErrorMessageModalAsync("Relay_PreconditionFailed_Authentication", cancellationToken);
+                return false;
             }
 
             try
@@ -39,7 +38,8 @@ namespace YachuDice.Relay
             }
             catch (Exception e)
             {
-                Debug.LogError($"Relay create allocation request failed {e.Message}");
+                Debug.LogException(e);
+                await Utilities.ErrorMessageModal.OpenErrorMessageModalAsync("Relay_CreateAllocationFailed", cancellationToken);
                 return false;
             }
 
@@ -54,16 +54,20 @@ namespace YachuDice.Relay
         public static async UniTask<bool> CreateJoinCodeAsync(CancellationToken cancellationToken)
         {
             if (_allocation == null)
+            {
+                await Utilities.ErrorMessageModal.OpenErrorMessageModalAsync("Relay_PreconditionFailed_Allocation", cancellationToken);
                 return false;
+            }
 
             try
             {
                 _joinCode = await RelayService.Instance.GetJoinCodeAsync(_allocation.AllocationId);
                 return true;
             }
-            catch
+            catch (Exception e)
             {
-                Debug.LogError("Relay create join code request failed");
+                Debug.LogException(e);
+                await Utilities.ErrorMessageModal.OpenErrorMessageModalAsync("Relay_CreateJoinCodeFailed", cancellationToken);
                 return false;
             }
         }

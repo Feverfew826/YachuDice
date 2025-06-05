@@ -2,7 +2,9 @@
     "name": "YachuDice.Utilities",
     "rootNamespace": "YachuDice.Utilities",
     "references": [
-        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:08ed834196f591a43a2bba24226d94af"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

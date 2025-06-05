@@ -4,7 +4,6 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 
 using Unity.Services.Authentication;
-using Unity.Services.Core;
 
 using UnityEngine;
 
@@ -17,34 +16,24 @@ namespace YachuDice.Authentication
         public static string PlayerId => _playerId;
 
 
-        public static async UniTask<bool> AuthenticatingAPlayerAsync(CancellationToken cancellationToken)
+        public static async UniTask<bool> SignInAnonymouslyAsync(CancellationToken cancellationToken)
         {
+            if (UnityServices.UnityServices.IsInitialized == false)
+            {
+                await Utilities.ErrorMessageModal.OpenErrorMessageModalAsync("Authentication_PreconditionFailed_UnityServiceInitialization", cancellationToken);
+                return false;
+            }
+
             try
             {
-                if (UnityServices.State == ServicesInitializationState.Uninitialized)
-                    await UnityServices.InitializeAsync();
-
-                if (UnityServices.State == ServicesInitializationState.Initializing)
-                    await UniTask.WaitWhile(() => UnityServices.State == ServicesInitializationState.Initializing, cancellationToken: cancellationToken);
-
-                if (UnityServices.State == ServicesInitializationState.Initialized)
-                {
-                    await AuthenticationService.Instance.SignInAnonymouslyAsync();
-                    _playerId = AuthenticationService.Instance.PlayerId;
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                _playerId = AuthenticationService.Instance.PlayerId;
+                return true;
             }
             catch (Exception e)
             {
-                Debug.Log(e);
+                Debug.LogException(e);
+                await Utilities.ErrorMessageModal.OpenErrorMessageModalAsync("Authentication_SignInAnonymouslyFailed", cancellationToken);
                 return false;
             }
         }

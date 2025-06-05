@@ -40,7 +40,7 @@ public class TitleSceneManager : MonoBehaviour
             return new UserInput { userInput = UserInputType.PlayNetworkGameAsHost };
         else if (userSelectedButton == _networkPlayAsClientButton)
             return new UserInput { userInput = UserInputType.PlayNetworkGameAsClient };
-        else if (userSelectedButton == _networkPlayAsHostButton)
+        else if (userSelectedButton == _quitButton)
             return new UserInput { userInput = UserInputType.Exit };
         else
             throw new InvalidOperationException();
