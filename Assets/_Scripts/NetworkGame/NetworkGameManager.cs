@@ -7,7 +7,6 @@ using Cysharp.Threading.Tasks;
 using UniRx;
 
 using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
 
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -23,27 +22,18 @@ public class NetworkGameManager : NetworkBehaviour
     private ReactiveCommand<List<int>> _clientRollResult = new();
     private ReactiveCommand<UserChoice> _clientUserChoice = new();
 
-    public async UniTask<NetworkGameResult> PlayGameAsync(NetworkGameParameter gameParameters, CancellationToken cancellationToken)
+    public async UniTask<NetworkGameResult> PlayGameAsync(NetworkGameParameter gameParameters, AuthenticatedRelayNetworkFacade authenticatedRelayNetworkFacade, CancellationToken cancellationToken)
     {
-        var networkManager = NetworkManager.Singleton;
-        var unityTransport = networkManager.GetComponent<UnityTransport>();
-
-        var autoConnectResult = await AuthenticatedRelayNetworkFacade.AutoConnectIfNotStartedNetworkAsync(networkManager, unityTransport, cancellationToken);
-        if (autoConnectResult == false)
-            return new NetworkGameResult();
-
-        await UniTask.WaitUntil(() => networkManager.IsConnectedClient, cancellationToken: cancellationToken);
-
         _gameElementContainer.Initialize();
 
         var buttonClicks = _gameElementContainer.KeepButtons.Select(elmt => elmt.OnClickAsObservable());
         buttonClicks.Zip(Enumerable.Range(0, Constants.DiceNum), (buttonClick, index) => buttonClick.Subscribe(_ => UpdateKeepButtonsRpc(index, _gameElementContainer.KeepFlags[index])).AddTo(this)).Consume();
 
-        if (networkManager.IsHost)
+        if (authenticatedRelayNetworkFacade.IsHost)
         {
             await PlayGameAsHostAsync(cancellationToken);
         }
-        else if (networkManager.IsClient)
+        else if (authenticatedRelayNetworkFacade.IsClient)
         {
             await PlayGameAsClientAsync(cancellationToken);
         }

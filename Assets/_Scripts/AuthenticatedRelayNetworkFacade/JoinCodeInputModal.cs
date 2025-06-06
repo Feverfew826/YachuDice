@@ -28,12 +28,25 @@ namespace YachuDice.Relay
 
         [SerializeField] private TMP_InputField _inputField;
         [SerializeField] private Button _submitButton;
+        [SerializeField] private Button _quitButton;
 
         public async UniTask<string> WaitSubmitAsync(CancellationToken cancellationToken)
         {
-            await _submitButton.OnClickAsync();
-
-            return _inputField.text;
+            while (true)
+            {
+                var clickedButton = await Utilities.Utilities.OnAnyClickAsync(_submitButton, _quitButton, cancellationToken);
+                if (clickedButton == _submitButton)
+                {
+                    if (string.IsNullOrWhiteSpace(_inputField.text))
+                        await Utilities.ErrorMessageModal.OpenErrorMessageModalAsync("Relay_JoinCodeInputEmpty", cancellationToken);
+                    else
+                        return _inputField.text;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
         }
     }
 }

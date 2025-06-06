@@ -80,26 +80,37 @@ public static class Main
                 }
                 else if (titleSceneUserInputResult.userInput == TitleSceneManager.UserInputType.PlayNetworkGameAsHost)
                 {
+                    using var authenticatedRelayNetworkFacade = AuthenticatedRelayNetworkFacade.GetDisposableInstance();
+                    if (authenticatedRelayNetworkFacade == null)
+                        continue;
+
+                    var startHostResult = await authenticatedRelayNetworkFacade.StartHostThenShowJoinCodeAsync(cancellationToken);
+                    if (startHostResult == false)
+                        continue;
+
                     await SceneManager.LoadSceneAsync("NetworkGameScene");
-                    var isHostStarted = NetworkManager.Singleton.StartHost();
-                    if (isHostStarted)
-                    {
-                        var gameManager = SceneManager.GetActiveScene().GetComponent<NetworkGameManager>();
-                        var gameResult = await gameManager.PlayGameAsync(new NetworkGameManager.NetworkGameParameter(), cancellationToken);
-                        NetworkManager.Singleton.Shutdown();
-                    }
+
+                    var gameManager = SceneManager.GetActiveScene().GetComponent<NetworkGameManager>();
+                    var gameResult = await gameManager.PlayGameAsync(new NetworkGameManager.NetworkGameParameter(), authenticatedRelayNetworkFacade, cancellationToken);
+
                     await SceneManager.LoadSceneAsync("TitleScene");
                 }
                 else if (titleSceneUserInputResult.userInput == TitleSceneManager.UserInputType.PlayNetworkGameAsClient)
                 {
+                    using var authenticatedRelayNetworkFacade = AuthenticatedRelayNetworkFacade.GetDisposableInstance();
+                    if (authenticatedRelayNetworkFacade == null)
+                        continue;
+
+                    var startHostResult = await authenticatedRelayNetworkFacade.RetrieveJoinCodeThenConnectToHostAsync(cancellationToken);
+                    if (startHostResult == false)
+                        continue;
+
                     await SceneManager.LoadSceneAsync("NetworkGameScene");
-                    var isClientStarted = NetworkManager.Singleton.StartClient();
-                    if (isClientStarted)
-                    {
-                        var gameManager = SceneManager.GetActiveScene().GetComponent<NetworkGameManager>();
-                        var gameResult = await gameManager.PlayGameAsync(new NetworkGameManager.NetworkGameParameter(), cancellationToken);
-                        NetworkManager.Singleton.Shutdown();
-                    }
+
+                    var gameManager = SceneManager.GetActiveScene().GetComponent<NetworkGameManager>();
+                    var gameResult = await gameManager.PlayGameAsync(new NetworkGameManager.NetworkGameParameter(), authenticatedRelayNetworkFacade, cancellationToken);
+                    NetworkManager.Singleton.Shutdown();
+
                     await SceneManager.LoadSceneAsync("TitleScene");
                 }
                 else if (titleSceneUserInputResult.userInput == TitleSceneManager.UserInputType.Exit)
@@ -124,7 +135,15 @@ public static class Main
             var rootGameObjects = SceneManager.GetActiveScene().GetRootGameObjects();
             if (rootGameObjects.TryGetComponent<NetworkGameManager>(out var networkGameManager))
             {
-                await networkGameManager.PlayGameAsync(new NetworkGameManager.NetworkGameParameter(), Application.exitCancellationToken);
+                using var authenticatedRelayNetworkFacade = AuthenticatedRelayNetworkFacade.GetDisposableInstance();
+                if (authenticatedRelayNetworkFacade == null)
+                    Containers.ProjectContext.Get<IEnvironment>().ExitGame();
+
+                var autoConnectResult = await authenticatedRelayNetworkFacade.AutoConnectIfNotStartedNetworkAsync(cancellationToken);
+                if (autoConnectResult == false)
+                    Containers.ProjectContext.Get<IEnvironment>().ExitGame();
+
+                await networkGameManager.PlayGameAsync(new NetworkGameManager.NetworkGameParameter(), authenticatedRelayNetworkFacade, Application.exitCancellationToken);
 
                 Containers.ProjectContext.Get<IEnvironment>().ExitGame();
             }

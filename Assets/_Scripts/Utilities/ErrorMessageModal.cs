@@ -38,6 +38,7 @@ namespace YachuDice.Utilities
                 "Relay_CreateAllocationFailed" => "Failed to create network environment. Please check network status.",
                 "Relay_PreconditionFailed_Allocation" => "Network environment is not created. Please retry from first step.",
                 "Relay_CreateJoinCodeFailed" => "Failed to create join code. Please check network status.",
+                "Relay_JoinCodeInputEmpty" => "Please enter the join code from the host.",
                 "Relay_JoinAllocationAsync" => "Failed to join to host. Please check join code is correct or check network status.",
                 _ => errorMessage
             };
