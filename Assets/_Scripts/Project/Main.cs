@@ -6,13 +6,13 @@ using Cysharp.Threading.Tasks;
 
 using Feverfew.DiLib;
 
-using Unity.Netcode;
-
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 using YachuDice.Environment.Interface;
+
+using static Unity.Netcode.NetworkSceneManager;
 
 public static class Main
 {
@@ -88,9 +88,31 @@ public static class Main
                     if (startHostResult == false)
                         continue;
 
-                    await SceneManager.LoadSceneAsync("NetworkGameScene");
+                    var loadCompletionSource = new UniTaskCompletionSource<Scene>();
+                    var loadEventCompletionSource = new UniTaskCompletionSource();
+                    SceneEventDelegate onSceneEventHandler = (Unity.Netcode.SceneEvent sceneEvent) =>
+                    {
+                        Debug.Log($"[SceneEvent] ClientId: {sceneEvent.ClientId}, SceneEventType: {sceneEvent.SceneEventType}, SceneName: {sceneEvent.SceneName}");
 
-                    var gameManager = SceneManager.GetActiveScene().GetComponent<NetworkGameManager>();
+                        if (sceneEvent.SceneEventType == Unity.Netcode.SceneEventType.LoadComplete && sceneEvent.SceneName == "NetworkGameScene")
+                            loadCompletionSource.TrySetResult(sceneEvent.Scene);
+
+                        if (sceneEvent.SceneEventType == Unity.Netcode.SceneEventType.LoadEventCompleted && sceneEvent.SceneName == "NetworkGameScene")
+                            loadEventCompletionSource.TrySetResult();
+                    };
+
+                    authenticatedRelayNetworkFacade.NetworkManager.SceneManager.OnSceneEvent += onSceneEventHandler;
+
+                    var sceneEventProgressStatus = authenticatedRelayNetworkFacade.NetworkManager.SceneManager.LoadScene("NetworkGameScene", LoadSceneMode.Single);
+                    if (sceneEventProgressStatus != Unity.Netcode.SceneEventProgressStatus.Started)
+                        continue;
+
+                    var networkGameScene = await loadCompletionSource.Task.AttachExternalCancellation(cancellationToken);
+                    await loadEventCompletionSource.Task.AttachExternalCancellation(cancellationToken);
+
+                    authenticatedRelayNetworkFacade.NetworkManager.SceneManager.OnSceneEvent -= onSceneEventHandler;
+
+                    var gameManager = networkGameScene.GetComponent<NetworkGameManager>();
                     var gameResult = await gameManager.PlayGameAsync(new NetworkGameManager.NetworkGameParameter(), authenticatedRelayNetworkFacade, cancellationToken);
 
                     await SceneManager.LoadSceneAsync("TitleScene");
@@ -105,11 +127,28 @@ public static class Main
                     if (startHostResult == false)
                         continue;
 
-                    await SceneManager.LoadSceneAsync("NetworkGameScene");
+                    var loadCompletionSource = new UniTaskCompletionSource<Scene>();
+                    var loadEventCompletionSource = new UniTaskCompletionSource();
+                    SceneEventDelegate onSceneEventHandler = (Unity.Netcode.SceneEvent sceneEvent) =>
+                    {
+                        Debug.Log($"[SceneEvent] ClientId: {sceneEvent.ClientId}, SceneEventType: {sceneEvent.SceneEventType}, SceneName: {sceneEvent.SceneName}");
 
-                    var gameManager = SceneManager.GetActiveScene().GetComponent<NetworkGameManager>();
+                        if (sceneEvent.SceneEventType == Unity.Netcode.SceneEventType.LoadComplete && sceneEvent.SceneName == "NetworkGameScene")
+                            loadCompletionSource.TrySetResult(sceneEvent.Scene);
+
+                        if (sceneEvent.SceneEventType == Unity.Netcode.SceneEventType.LoadEventCompleted && sceneEvent.SceneName == "NetworkGameScene")
+                            loadEventCompletionSource.TrySetResult();
+                    };
+
+                    authenticatedRelayNetworkFacade.NetworkManager.SceneManager.OnSceneEvent += onSceneEventHandler;
+
+                    var networkGameScene = await loadCompletionSource.Task.AttachExternalCancellation(cancellationToken);
+                    await loadEventCompletionSource.Task.AttachExternalCancellation(cancellationToken);
+
+                    authenticatedRelayNetworkFacade.NetworkManager.SceneManager.OnSceneEvent -= onSceneEventHandler;
+
+                    var gameManager = networkGameScene.GetComponent<NetworkGameManager>();
                     var gameResult = await gameManager.PlayGameAsync(new NetworkGameManager.NetworkGameParameter(), authenticatedRelayNetworkFacade, cancellationToken);
-                    NetworkManager.Singleton.Shutdown();
 
                     await SceneManager.LoadSceneAsync("TitleScene");
                 }

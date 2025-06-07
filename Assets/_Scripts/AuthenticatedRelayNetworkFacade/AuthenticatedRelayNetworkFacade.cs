@@ -30,6 +30,8 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
     private NetworkManager _networkManager;
     private UnityTransport _unityTransport;
 
+    public NetworkManager NetworkManager => _networkManager;
+
     public bool IsHost => _networkManager.IsHost;
     public bool IsClient => _networkManager.IsClient;
 

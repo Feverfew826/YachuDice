@@ -13,10 +13,10 @@ public class LocalGameManager : MonoBehaviour
     {
         _gameElementContainer.Initialize();
 
-        using var linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, destroyCancellationToken, _gameElementContainer.QuitCancellationToken);
+        using var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, destroyCancellationToken, _gameElementContainer.QuitCancellationToken);
         try
         {
-            await PlayGameAsync(linkedCancellationToken.Token);
+            await PlayGameAsync(linkedCancellationTokenSource.Token);
         }
         catch (OperationCanceledException)
         {

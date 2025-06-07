@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -29,13 +30,24 @@ public class NetworkGameManager : NetworkBehaviour
         var buttonClicks = _gameElementContainer.KeepButtons.Select(elmt => elmt.OnClickAsObservable());
         buttonClicks.Zip(Enumerable.Range(0, Constants.DiceNum), (buttonClick, index) => buttonClick.Subscribe(_ => UpdateKeepButtonsRpc(index, _gameElementContainer.KeepFlags[index])).AddTo(this)).Consume();
 
-        if (authenticatedRelayNetworkFacade.IsHost)
+        using var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, destroyCancellationToken, _gameElementContainer.QuitCancellationToken);
+        try
         {
-            await PlayGameAsHostAsync(cancellationToken);
+            if (authenticatedRelayNetworkFacade.IsHost)
+            {
+                await PlayGameAsHostAsync(linkedCancellationTokenSource.Token);
+            }
+            else if (authenticatedRelayNetworkFacade.IsClient)
+            {
+                await PlayGameAsClientAsync(linkedCancellationTokenSource.Token);
+            }
         }
-        else if (authenticatedRelayNetworkFacade.IsClient)
+        catch (OperationCanceledException)
         {
-            await PlayGameAsClientAsync(cancellationToken);
+            if (_gameElementContainer.QuitCancellationToken.IsCancellationRequested)
+                return new NetworkGameResult();
+            else
+                throw;
         }
 
         return new NetworkGameResult();
@@ -185,7 +197,7 @@ public class NetworkGameManager : NetworkBehaviour
             var canKeep = hasRolled && canRollMore;
             gameElementContainer.UpdateKeepButtons(canKeep, false);
 
-            var isHostContinueTurn = await _isHostContinueTurn;
+            var isHostContinueTurn = await _isHostContinueTurn.ToUniTask(true, cancellationToken);
             if (isHostContinueTurn)
                 rollCount++;
             else
@@ -308,6 +320,7 @@ public class NetworkGameManager : NetworkBehaviour
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref choiceType);
+            serializer.SerializeValue(ref combination);
         }
 
         public NetworkUserChoice(UserChoice userChoice)
