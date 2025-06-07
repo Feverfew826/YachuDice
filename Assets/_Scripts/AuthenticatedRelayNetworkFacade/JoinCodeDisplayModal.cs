@@ -5,6 +5,8 @@ using Cysharp.Threading.Tasks;
 
 using TMPro;
 
+using UniRx;
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -37,5 +39,11 @@ namespace YachuDice.Relay
 
         [SerializeField] private TextMeshProUGUI _joinCodeText;
         [SerializeField] private Button _quitButton;
+        [SerializeField] private Button _copyButton;
+
+        private void Start()
+        {
+            _copyButton.OnClickAsObservable().Subscribe(_ => GUIUtility.systemCopyBuffer = _joinCodeText.text).AddTo(this);
+        }
     }
 }
