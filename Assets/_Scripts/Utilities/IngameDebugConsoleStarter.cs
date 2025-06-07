@@ -18,8 +18,6 @@ namespace YachuDice.Utilities
                 return;
 
             _ingameDebugConsoleLoads = await AddressableWrapper.AddressableWrapper.DisposableInstantiateAsync<Transform>("IngameDebugConsole.prefab", cancellationToken: cancellationToken);
-            var ingameDebugConsole = _ingameDebugConsoleLoads.Instance;
-            GameObject.DontDestroyOnLoad(ingameDebugConsole.gameObject);
         }
     }
 }
