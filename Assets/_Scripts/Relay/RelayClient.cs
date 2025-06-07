@@ -11,17 +11,17 @@ using UnityEngine;
 
 namespace YachuDice.Relay
 {
-    public class RelayClient : MonoBehaviour
+    public class RelayClient
     {
         private const string ConnectionType = "udp";
 
-        private static JoinAllocation _joinAllocation;
-        public static bool IsAllocationJoined => _joinAllocation != null;
+        private JoinAllocation _joinAllocation;
+        public bool IsAllocationJoined => _joinAllocation != null;
 
-        private static Nullable<RelayServerData> _relayServerData;
-        public static Nullable<RelayServerData> RelayServerData => _relayServerData;
+        private Nullable<RelayServerData> _relayServerData;
+        public Nullable<RelayServerData> RelayServerData => _relayServerData;
 
-        public static async UniTask<bool> JoinAllocationAsync(string joinCode, CancellationToken cancellationToken)
+        public async UniTask<bool> JoinAllocationAsync(string joinCode, CancellationToken cancellationToken)
         {
             if (Authentication.Authentication.PlayerId == null)
             {

@@ -15,16 +15,16 @@ namespace YachuDice.Relay
     {
         private const string ConnectionType = "udp";
 
-        private static Allocation _allocation;
-        public static bool IsAllocationCreated => _allocation != null;
+        private Allocation _allocation;
+        public bool IsAllocationCreated => _allocation != null;
 
-        private static Nullable<RelayServerData> _relayServerData;
-        public static Nullable<RelayServerData> RelayServerData => _relayServerData;
+        private Nullable<RelayServerData> _relayServerData;
+        public Nullable<RelayServerData> RelayServerData => _relayServerData;
 
-        private static string _joinCode;
-        public static string JoinCode => _joinCode;
+        private string _joinCode;
+        public string JoinCode => _joinCode;
 
-        public static async UniTask<bool> CreateAllocationAsync(int maxConnections, CancellationToken cancellationToken)
+        public async UniTask<bool> CreateAllocationAsync(int maxConnections, CancellationToken cancellationToken)
         {
             if (Authentication.Authentication.PlayerId == null)
             {
@@ -51,7 +51,7 @@ namespace YachuDice.Relay
             return true;
         }
 
-        public static async UniTask<bool> CreateJoinCodeAsync(CancellationToken cancellationToken)
+        public async UniTask<bool> CreateJoinCodeAsync(CancellationToken cancellationToken)
         {
             if (_allocation == null)
             {

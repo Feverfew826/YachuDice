@@ -151,22 +151,25 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
 
     private static async UniTask<bool> StartHostThenShowJoinCodeAsync(NetworkManager networkManager, UnityTransport unityTransport, CancellationToken cancellationToken)
     {
-        var startHostResult = await StartHostAsync(networkManager, unityTransport, cancellationToken);
+        var relayHost = new RelayHost();
+
+        var startHostResult = await StartHostAsync(networkManager, unityTransport, relayHost, cancellationToken);
         if (startHostResult == false)
             return false;
 
-        return await JoinCodeDisplayModal.OpenJoinCodeDisplayModalAsync(RelayHost.JoinCode, () => networkManager.ConnectedClients.Count > 1, cancellationToken);
+        return await JoinCodeDisplayModal.OpenJoinCodeDisplayModalAsync(relayHost.JoinCode, () => networkManager.ConnectedClients.Count > 1, cancellationToken);
     }
 
     private static async UniTask<bool> RetrieveJoinCodeThenConnectToHostAsync(NetworkManager networkManager, UnityTransport unityTransport, CancellationToken cancellationToken)
     {
+        var relayClient = new RelayClient();
         while (true)
         {
             var joinCode = await JoinCodeInputModal.OpenJoinCodeInputModalAsync(cancellationToken);
             if (string.IsNullOrEmpty(joinCode))
                 return false;
 
-            var startClientResult = await StartClientAsync(networkManager, unityTransport, joinCode, cancellationToken);
+            var startClientResult = await StartClientAsync(networkManager, unityTransport, relayClient, joinCode, cancellationToken);
             if (startClientResult)
             {
                 await UniTask.WaitUntil(() => networkManager.IsConnectedClient, cancellationToken: cancellationToken);
@@ -175,7 +178,7 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
         }
     }
 
-    private static async UniTask<bool> StartHostAsync(NetworkManager networkManager, UnityTransport unityTransport, CancellationToken cancellationToken)
+    private static async UniTask<bool> StartHostAsync(NetworkManager networkManager, UnityTransport unityTransport, RelayHost relayHost, CancellationToken cancellationToken)
     {
         if (UnityServices.IsInitialized == false)
         {
@@ -191,18 +194,18 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
                 return false;
         }
 
-        if (RelayHost.IsAllocationCreated == false)
+        if (relayHost.IsAllocationCreated == false)
         {
-            var createAllocationResult = await RelayHost.CreateAllocationAsync(MaxConnections, cancellationToken);
+            var createAllocationResult = await relayHost.CreateAllocationAsync(MaxConnections, cancellationToken);
             if (createAllocationResult == false)
                 return false;
         }
 
-        unityTransport.SetRelayServerData(RelayHost.RelayServerData.Value);
+        unityTransport.SetRelayServerData(relayHost.RelayServerData.Value);
 
-        if (RelayHost.JoinCode == null)
+        if (relayHost.JoinCode == null)
         {
-            var createJoinCodeResult = await RelayHost.CreateJoinCodeAsync(cancellationToken);
+            var createJoinCodeResult = await relayHost.CreateJoinCodeAsync(cancellationToken);
             if (createJoinCodeResult == false)
                 return false;
         }
@@ -210,7 +213,7 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
         return networkManager.StartHost();
     }
 
-    private static async UniTask<bool> StartClientAsync(NetworkManager networkManager, UnityTransport unityTransport, string joinCode, CancellationToken cancellationToken)
+    private static async UniTask<bool> StartClientAsync(NetworkManager networkManager, UnityTransport unityTransport, RelayClient relayClient, string joinCode, CancellationToken cancellationToken)
     {
         if (UnityServices.IsInitialized == false)
         {
@@ -226,14 +229,14 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
                 return false;
         }
 
-        if (RelayClient.IsAllocationJoined == false)
+        if (relayClient.IsAllocationJoined == false)
         {
-            var createAllocationResult = await RelayClient.JoinAllocationAsync(joinCode, cancellationToken);
+            var createAllocationResult = await relayClient.JoinAllocationAsync(joinCode, cancellationToken);
             if (createAllocationResult == false)
                 return false;
         }
 
-        unityTransport.SetRelayServerData(RelayClient.RelayServerData.Value);
+        unityTransport.SetRelayServerData(relayClient.RelayServerData.Value);
 
         return networkManager.StartClient();
     }
