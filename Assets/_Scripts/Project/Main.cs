@@ -11,6 +11,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 using YachuDice.Environment.Interface;
+using YachuDice.Utilities;
 
 using static Unity.Netcode.NetworkSceneManager;
 
@@ -65,6 +66,8 @@ public static class Main
     {
         try
         {
+            await IngameDebugConsoleStarter.OpenIngameDebugConsoleAndDontDestroyAsync(cancellationToken);
+
             while (true)
             {
                 var titleScene = SceneManager.GetActiveScene();

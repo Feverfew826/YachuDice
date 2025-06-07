@@ -15,6 +15,11 @@ MonoBehaviour:
   m_GroupName: SelfContainedPcOrConsoleLocalGroup
   m_GUID: d0e3483822692744ba7603b60dce6adf
   m_SerializeEntries:
+  - m_GUID: 1ae54f1513af7c94aa4e2081b1f71b60
+    m_Address: IngameDebugConsole.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 556cd1519a519ab41b1d64e841877622
     m_Address: NetworkManager.prefab
     m_ReadOnly: 0

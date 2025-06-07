@@ -44,3 +44,4 @@ Plastic lid snap.wav by SDLx -- https://freesound.org/s/211171/ -- License: Attr
 Background Music by Migfus20 -- https://freesound.org/s/609562/ -- License: Attribution 4.0  
 UniTask by Cysharp -- https://github.com/Cysharp/UniTask -- License: MIT  
 UniRx by neuecc -- https://github.com/neuecc/UniRx -- License: MIT  
+UnityIngameDebugConsole by yasirkula -- https://github.com/yasirkula/UnityIngameDebugConsole -- License: MIT  
