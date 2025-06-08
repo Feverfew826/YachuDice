@@ -4,6 +4,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class LocalGameManager : MonoBehaviour
 {
@@ -35,9 +36,57 @@ public class LocalGameManager : MonoBehaviour
         {
             foreach (var playerScoreBoard in _gameElementContainer.PlayerScoreBoards)
             {
-                await GameManagerTemp.PlayTrunAsync(_gameElementContainer, playerScoreBoard, cancellationToken);
+                await PlayTrunAsync(_gameElementContainer, playerScoreBoard, cancellationToken);
             }
         }
+    }
+
+    public static async UniTask PlayTrunAsync(GameElementContainer gameElementContainer, PlayerScoreBoard playerScoreBoard, CancellationToken cancellationToken)
+    {
+        playerScoreBoard.Highlight(true);
+        gameElementContainer.ResetKeepFlags();
+
+        var rollCount = 0;
+        while (true)
+        {
+            var hasRolled = rollCount > 0;
+            var canRollMore = rollCount < Constants.RollNum;
+
+            // UI 업데이트
+            gameElementContainer.UpdateRollButtonState(canRollMore);
+
+            gameElementContainer.UpdateConfirmButtons(playerScoreBoard, hasRolled);
+
+            var canKeep = hasRolled && canRollMore;
+            gameElementContainer.UpdateKeepButtons(canKeep, true);
+
+            var userChoice = await gameElementContainer.WaitUserChoiceRollOrConfirmAsync(cancellationToken);
+
+            // 입력 처리 동안 UI 요소 비활성화
+            gameElementContainer.MakeUIElementsUninteractable();
+
+            // 사용자 입력 처리(돌리거나, 멈추거나)
+            if (userChoice.choiceType == ChoiceType.Roll)
+            {
+                var rollResult = await gameElementContainer.RollDicesAsync(cancellationToken);
+
+                playerScoreBoard.SetPreviewScores(GameManagerCommonLogic.CalculateCombinationScores(rollResult));
+
+                rollCount++;
+            }
+            else if (userChoice.choiceType == ChoiceType.Confirm)
+            {
+                GameManagerCommonLogic.ProcessUserChoiceConfirm(gameElementContainer, playerScoreBoard, userChoice.combination);
+
+                break;
+            }
+            else
+            {
+                Assert.IsTrue(false, "Unexpected user choice.");
+            }
+        }
+
+        playerScoreBoard.Highlight(false);
     }
 
     public struct LocalGameParameter

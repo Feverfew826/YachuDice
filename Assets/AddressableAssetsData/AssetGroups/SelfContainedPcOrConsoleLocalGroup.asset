@@ -40,6 +40,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 93d5b1f5cab25ec47815cf112382db84
+    m_Address: DisconnectionNotifyModal.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e18166842cfa7e74e84873b8fba8ae01
     m_Address: QualitySettings.prefab
     m_ReadOnly: 0

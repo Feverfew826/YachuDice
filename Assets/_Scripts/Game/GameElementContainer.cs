@@ -291,13 +291,18 @@ public class GameElementContainer : MonoBehaviour
 
         if (result == _pauseMenuQuitButton)
         {
-            _quitCancellationTokenSource.Cancel();
+            Quit();
         }
         else
         {
             _pauseMenuParent.gameObject.SetActive(false);
             EventSystem.current.SetSelectedGameObject(selectionBackedup);
         }
+    }
+
+    public void Quit()
+    {
+        _quitCancellationTokenSource.Cancel();
     }
 
     public void UpdateRollButtonState(bool canRollMore)

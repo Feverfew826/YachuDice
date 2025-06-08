@@ -1,61 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
-using Cysharp.Threading.Tasks;
-
-using UnityEngine.Assertions;
-
-public static class GameManagerTemp
+public static class GameManagerCommonLogic
 {
-    public static async UniTask PlayTrunAsync(GameElementContainer gameElementContainer, PlayerScoreBoard playerScoreBoard, CancellationToken cancellationToken)
-    {
-        playerScoreBoard.Highlight(true);
-        gameElementContainer.ResetKeepFlags();
-
-        var rollCount = 0;
-        while (true)
-        {
-            var hasRolled = rollCount > 0;
-            var canRollMore = rollCount < Constants.RollNum;
-
-            // UI 업데이트
-            gameElementContainer.UpdateRollButtonState(canRollMore);
-
-            gameElementContainer.UpdateConfirmButtons(playerScoreBoard, hasRolled);
-
-            var canKeep = hasRolled && canRollMore;
-            gameElementContainer.UpdateKeepButtons(canKeep, true);
-
-            var userChoice = await gameElementContainer.WaitUserChoiceRollOrConfirmAsync(cancellationToken);
-
-            // 입력 처리 동안 UI 요소 비활성화
-            gameElementContainer.MakeUIElementsUninteractable();
-
-            // 사용자 입력 처리(돌리거나, 멈추거나)
-            if (userChoice.choiceType == ChoiceType.Roll)
-            {
-                var rollResult = await gameElementContainer.RollDicesAsync(cancellationToken);
-
-                playerScoreBoard.SetPreviewScores(CalculateCombinationScores(rollResult));
-
-                rollCount++;
-            }
-            else if (userChoice.choiceType == ChoiceType.Confirm)
-            {
-                ProcessUserChoiceConfirm(gameElementContainer, playerScoreBoard, userChoice.combination);
-
-                break;
-            }
-            else
-            {
-                Assert.IsTrue(false, "Unexpected user choice.");
-            }
-        }
-
-        playerScoreBoard.Highlight(false);
-    }
-
     public static (Combination combination, int score) ProcessUserChoiceConfirm(GameElementContainer gameElementContainer, PlayerScoreBoard playerScoreBoard, Combination confirmedCombination)
     {
         foreach (var combination in Constants.AllCombinations)

@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
+using YachuDice.Environment.Interface;
 using YachuDice.Utilities;
 
 public class TitleSceneManager : MonoBehaviour
@@ -28,6 +29,12 @@ public class TitleSceneManager : MonoBehaviour
         public UserInputType userInput;
 
         public string[] playerNames;
+    }
+
+    private void Start()
+    {
+        if (Feverfew.DiLib.Containers.ProjectContext.Get<IEnvironment>().IsMobilePlatform)
+            _startButton.gameObject.SetActive(false);
     }
 
     public async UniTask<UserInput> WaitUserInputAsync(CancellationToken cancellationToken)

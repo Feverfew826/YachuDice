@@ -23,6 +23,8 @@ public class NetworkGameManager : NetworkBehaviour
     private ReactiveCommand<List<int>> _clientRollResult = new();
     private ReactiveCommand<UserChoice> _clientUserChoice = new();
 
+    private bool _isHost;
+
     public async UniTask<NetworkGameResult> PlayGameAsync(NetworkGameParameter gameParameters, AuthenticatedRelayNetworkFacade authenticatedRelayNetworkFacade, CancellationToken cancellationToken)
     {
         _gameElementContainer.Initialize();
@@ -30,15 +32,19 @@ public class NetworkGameManager : NetworkBehaviour
         var buttonClicks = _gameElementContainer.KeepButtons.Select(elmt => elmt.OnClickAsObservable());
         buttonClicks.Zip(Enumerable.Range(0, Constants.DiceNum), (buttonClick, index) => buttonClick.Subscribe(_ => UpdateKeepButtonsRpc(index, _gameElementContainer.KeepFlags[index])).AddTo(this)).Consume();
 
+        authenticatedRelayNetworkFacade.NetworkManager.OnClientDisconnectCallback += OnClientDisconnectHandler;
+
         using var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, destroyCancellationToken, _gameElementContainer.QuitCancellationToken);
         try
         {
             if (authenticatedRelayNetworkFacade.IsHost)
             {
+                _isHost = true;
                 await PlayGameAsHostAsync(linkedCancellationTokenSource.Token);
             }
             else if (authenticatedRelayNetworkFacade.IsClient)
             {
+                _isHost = false;
                 await PlayGameAsClientAsync(linkedCancellationTokenSource.Token);
             }
         }
@@ -49,8 +55,27 @@ public class NetworkGameManager : NetworkBehaviour
             else
                 throw;
         }
+        finally
+        {
+            authenticatedRelayNetworkFacade.NetworkManager.OnClientDisconnectCallback -= OnClientDisconnectHandler;
+        }
 
         return new NetworkGameResult();
+    }
+
+    private void OnClientDisconnectHandler(ulong clientId)
+    {
+        OnClientDisconnectHandlerAsync(destroyCancellationToken).Forget();
+    }
+
+    private async UniTask OnClientDisconnectHandlerAsync(CancellationToken cancellationToken)
+    {
+        // If _isHost is true, it means the client is disconnected.
+        // If _isHost is false, it means the host is disconnected.
+        var isClientDisconnected = _isHost;
+        await DisconnectionNotifyModal.OpenDisconnectionNotifyModalAsync(isClientDisconnected, cancellationToken);
+
+        _gameElementContainer.Quit();
     }
 
     private async UniTask PlayGameAsHostAsync(CancellationToken cancellationToken)
@@ -95,7 +120,7 @@ public class NetworkGameManager : NetworkBehaviour
             {
                 var rollResult = await gameElementContainer.RollDicesAsync(cancellationToken);
 
-                var previewScores = GameManagerTemp.CalculateCombinationScores(rollResult);
+                var previewScores = GameManagerCommonLogic.CalculateCombinationScores(rollResult);
 
                 playerScoreBoard.SetPreviewScores(previewScores);
 
@@ -105,7 +130,7 @@ public class NetworkGameManager : NetworkBehaviour
             }
             else if (userChoice.choiceType == ChoiceType.Confirm)
             {
-                var updatedScore = GameManagerTemp.ProcessUserChoiceConfirm(gameElementContainer, playerScoreBoard, userChoice.combination);
+                var updatedScore = GameManagerCommonLogic.ProcessUserChoiceConfirm(gameElementContainer, playerScoreBoard, userChoice.combination);
 
                 HostUpdatedScoreRpc(updatedScore.combination, updatedScore.score);
 
@@ -146,7 +171,7 @@ public class NetworkGameManager : NetworkBehaviour
             {
                 var rollResult = await gameElementContainer.RollDicesAsync(cancellationToken);
 
-                playerScoreBoard.SetPreviewScores(GameManagerTemp.CalculateCombinationScores(rollResult));
+                playerScoreBoard.SetPreviewScores(GameManagerCommonLogic.CalculateCombinationScores(rollResult));
 
                 ClientRollResultRpc(rollResult.ToArray());
 
@@ -154,7 +179,7 @@ public class NetworkGameManager : NetworkBehaviour
             }
             else if (userChoice.choiceType == ChoiceType.Confirm)
             {
-                var updatedScore = GameManagerTemp.ProcessUserChoiceConfirm(gameElementContainer, playerScoreBoard, userChoice.combination);
+                var updatedScore = GameManagerCommonLogic.ProcessUserChoiceConfirm(gameElementContainer, playerScoreBoard, userChoice.combination);
 
                 ClientUpdatedScoreRpc(updatedScore.combination, updatedScore.score);
 
@@ -243,7 +268,7 @@ public class NetworkGameManager : NetworkBehaviour
             {
                 var rollResult = await _clientRollResult.ToUniTask(true, cancellationToken);
 
-                playerScoreBoard.SetPreviewScores(GameManagerTemp.CalculateCombinationScores(rollResult));
+                playerScoreBoard.SetPreviewScores(GameManagerCommonLogic.CalculateCombinationScores(rollResult));
 
                 rollCount++;
             }
@@ -275,7 +300,7 @@ public class NetworkGameManager : NetworkBehaviour
     [Rpc(SendTo.NotServer)]
     private void HostRollResultRpc(int[] rollResult)
     {
-        _gameElementContainer.PlayerScoreBoards[0].SetPreviewScores(GameManagerTemp.CalculateCombinationScores(rollResult.ToList()));
+        _gameElementContainer.PlayerScoreBoards[0].SetPreviewScores(GameManagerCommonLogic.CalculateCombinationScores(rollResult.ToList()));
 
         _isHostContinueTurn.Execute(true);
     }
