@@ -45,3 +45,4 @@ Background Music by Migfus20 -- https://freesound.org/s/609562/ -- License: Attr
 UniTask by Cysharp -- https://github.com/Cysharp/UniTask -- License: MIT  
 UniRx by neuecc -- https://github.com/neuecc/UniRx -- License: MIT  
 UnityIngameDebugConsole by yasirkula -- https://github.com/yasirkula/UnityIngameDebugConsole -- License: MIT  
+Go Noto Universal by satbyy -- https://github.com/satbyy/go-noto-universal -- License: SIL Open Font License, Version 1.1
