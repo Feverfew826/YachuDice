@@ -13,6 +13,7 @@ using UnityEngine;
 
 using YachuDice.AddressableWrapper;
 using YachuDice.Authentication;
+using YachuDice.Primitive;
 using YachuDice.Relay;
 using YachuDice.UnityServices;
 
@@ -100,7 +101,7 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
 
     public async UniTask<bool> AutoConnectIfNotStartedNetworkAsync(CancellationToken cancellationToken)
     {
-        var initializationResult = await InitializeAsync(cancellationToken);
+        var initializationResult = await InitializeAsync(cancellationToken).WithLoadingScreen();
         if (initializationResult == false)
             return false;
 
@@ -109,7 +110,7 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
 
     public async UniTask<bool> StartHostThenShowJoinCodeAsync(CancellationToken cancellationToken)
     {
-        var initializationResult = await InitializeAsync(cancellationToken);
+        var initializationResult = await InitializeAsync(cancellationToken).WithLoadingScreen();
         if (initializationResult == false)
             return false;
 
@@ -118,7 +119,7 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
 
     public async UniTask<bool> RetrieveJoinCodeThenConnectToHostAsync(CancellationToken cancellationToken)
     {
-        var initializationResult = await InitializeAsync(cancellationToken);
+        var initializationResult = await InitializeAsync(cancellationToken).WithLoadingScreen();
         if (initializationResult == false)
             return false;
 
@@ -153,7 +154,7 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
     {
         var relayHost = new RelayHost();
 
-        var startHostResult = await StartHostAsync(networkManager, unityTransport, relayHost, cancellationToken);
+        var startHostResult = await StartHostAsync(networkManager, unityTransport, relayHost, cancellationToken).WithLoadingScreen();
         if (startHostResult == false)
             return false;
 
@@ -169,10 +170,10 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
             if (string.IsNullOrEmpty(joinCode))
                 return false;
 
-            var startClientResult = await StartClientAsync(networkManager, unityTransport, relayClient, joinCode, cancellationToken);
+            var startClientResult = await StartClientAsync(networkManager, unityTransport, relayClient, joinCode, cancellationToken).WithLoadingScreen();
             if (startClientResult)
             {
-                await UniTask.WaitUntil(() => networkManager.IsConnectedClient, cancellationToken: cancellationToken);
+                await UniTask.WaitUntil(() => networkManager.IsConnectedClient, cancellationToken: cancellationToken).WithLoadingScreen();
                 return true;
             }
         }
