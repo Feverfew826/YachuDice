@@ -1,10 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
+
+using TMPro;
 
 using UniRx;
 
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerScoreBoard : MonoBehaviour
 {
@@ -12,8 +12,8 @@ public class PlayerScoreBoard : MonoBehaviour
     private const int BonusScore = 35;
     [SerializeField] private Cell[] _cells;
     [SerializeField] private Cell _totalScoreCell;
-    [SerializeField] private Text _nameText;
-    [SerializeField] private Text _bonusSumText;
+    [SerializeField] private TextMeshProUGUI _nameText;
+    [SerializeField] private TextMeshProUGUI _bonusSumText;
 
     private ReactiveDictionary<Combination, int> _scoreDictionary = new ReactiveDictionary<Combination, int>();
 
@@ -81,9 +81,9 @@ public class PlayerScoreBoard : MonoBehaviour
 
     public void SetPreviewScores(Dictionary<Combination, int> scoreDictionary)
     {
-        foreach(var key in scoreDictionary.Keys)
+        foreach (var key in scoreDictionary.Keys)
         {
-            if(_scoreDictionary.ContainsKey(key) == false)
+            if (_scoreDictionary.ContainsKey(key) == false)
                 SetScore(key, scoreDictionary[key], Color.gray);
         }
     }
