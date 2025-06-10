@@ -6,6 +6,6 @@ public class EtCetera : MonoBehaviour
 {
     public void OpenQualitySettings()
     {
-        QualitySettings.OpenQualitySettingsAsync(this.GetCancellationTokenOnDestroy()).Forget();
+        QualitySettingsModal.OpenQualitySettingsModalAsync(this.GetCancellationTokenOnDestroy()).Forget();
     }
 }

@@ -8,15 +8,15 @@ using UnityEngine.UI;
 
 using YachuDice.AddressableWrapper;
 
-public class QualitySettings : MonoBehaviour
+public class QualitySettingsModal : MonoBehaviour
 {
     [SerializeField] private Button _saveButton;
 
-    public static async UniTask OpenQualitySettingsAsync(CancellationToken cancellationToken)
+    public static async UniTask OpenQualitySettingsModalAsync(CancellationToken cancellationToken)
     {
         var selectionBackedup = EventSystem.current.currentSelectedGameObject;
 
-        using var qualitySettingsLoads = await AddressableWrapper.DisposableInstantiateAsync<QualitySettings>("QualitySettings.prefab", cancellationToken: cancellationToken);
+        using var qualitySettingsLoads = await AddressableWrapper.DisposableInstantiateAsync<QualitySettingsModal>("QualitySettings.prefab", cancellationToken: cancellationToken);
         var qualitySettings = qualitySettingsLoads.Instance;
         EventSystem.current.SetSelectedGameObject(qualitySettings.gameObject);
 
