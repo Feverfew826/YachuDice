@@ -78,6 +78,8 @@ public class LocalGameManager : MonoBehaviour
             {
                 GameManagerCommonLogic.ProcessUserChoiceConfirm(gameElementContainer, playerScoreBoard, userChoice.combination);
 
+                await CombinationNotifier.ShowCombinationNotifierAsync(userChoice.combination, cancellationToken);
+
                 break;
             }
             else
