@@ -22,7 +22,7 @@ public class PlayerScoreBoard : MonoBehaviour
         _nameText.text = name;
     }
 
-    private int CalcTotalScore()
+    public int CalcTotalScore()
     {
         var sum = 0;
 

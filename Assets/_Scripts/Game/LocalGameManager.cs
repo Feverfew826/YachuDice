@@ -32,13 +32,49 @@ public class LocalGameManager : MonoBehaviour
 
     private async UniTask PlayGameAsync(CancellationToken cancellationToken)
     {
-        for (var i = 0; i < Constants.TurnNum; i++)
+        await GamePhaseNotifier.ShowGamePhaseNotifierAsync(GamePhaseNotifier.GamePhase.GameStart, cancellationToken);
+
+        for (var turnCount = 0; turnCount < Constants.TurnNum; turnCount++)
         {
-            foreach (var playerScoreBoard in _gameElementContainer.PlayerScoreBoards)
+            for (var playerIndex = 0; playerIndex < _gameElementContainer.PlayerScoreBoards.Count; playerIndex++)
             {
+                var playerScoreBoard = _gameElementContainer.PlayerScoreBoards[playerIndex];
+
+                var gamePhase_turn = playerIndex switch
+                {
+                    0 => GamePhaseNotifier.GamePhase.Player1sTurn,
+                    1 => GamePhaseNotifier.GamePhase.Player2sTurn,
+                    _ => GamePhaseNotifier.GamePhase.Player1sTurn
+                };
+
+                await GamePhaseNotifier.ShowGamePhaseNotifierAsync(gamePhase_turn, cancellationToken);
+
                 await PlayTrunAsync(_gameElementContainer, playerScoreBoard, cancellationToken);
             }
         }
+
+        var maxIndex = 0;
+        var maxScore = int.MinValue;
+        for (var i = 0; i < _gameElementContainer.PlayerScoreBoards.Count; i++)
+        {
+            var playerScoreBoard = _gameElementContainer.PlayerScoreBoards[i];
+            var playerTotalScore = playerScoreBoard.CalcTotalScore();
+            if (playerTotalScore > maxScore)
+            {
+                maxScore = playerTotalScore;
+                maxIndex = i;
+            }
+        }
+
+        var gamePhase_winner = maxIndex switch
+        {
+            0 => GamePhaseNotifier.GamePhase.Player1Win,
+            1 => GamePhaseNotifier.GamePhase.Player2Win,
+            _ => GamePhaseNotifier.GamePhase.Player1Win
+        };
+
+        await GamePhaseNotifier.ShowGamePhaseNotifierAsync(gamePhase_winner, cancellationToken);
+
     }
 
     public static async UniTask PlayTrunAsync(GameElementContainer gameElementContainer, PlayerScoreBoard playerScoreBoard, CancellationToken cancellationToken)

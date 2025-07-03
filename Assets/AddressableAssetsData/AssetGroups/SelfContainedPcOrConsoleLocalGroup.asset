@@ -15,8 +15,18 @@ MonoBehaviour:
   m_GroupName: SelfContainedPcOrConsoleLocalGroup
   m_GUID: d0e3483822692744ba7603b60dce6adf
   m_SerializeEntries:
+  - m_GUID: 056091e1275f2da47ac460d241d0f926
+    m_Address: GamePhaseNotifier_Player1sTurn.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1ae54f1513af7c94aa4e2081b1f71b60
     m_Address: IngameDebugConsole.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 461fad5a5ef71a142a175fdeb56a93f1
+    m_Address: GamePhaseNotifier_Player1Win.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -40,6 +50,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 56653dd3cb8541d43be48a45954c4ce2
+    m_Address: GamePhaseNotifier_Player2Win.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 62c6ad06793f97c4397cbb82239449d9
     m_Address: CombinationNotifier_Choice.prefab
     m_ReadOnly: 0
@@ -52,6 +67,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 71c4be2104e7a1f42ba44145459c3732
     m_Address: CombinationNotifier_Deuces.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 77b01bc9a08323c41a815015d5ec53da
+    m_Address: GamePhaseNotifier_YouWin.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -80,8 +100,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6856199ead579d448b8b8e745c61cb6
+    m_Address: GamePhaseNotifier_MyTurn.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b9ecc02f79b2a274ca1ead988b001062
     m_Address: CombinationNotifier_Aces.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dc159da3029583e43874528d512fcaf8
+    m_Address: GamePhaseNotifier_YouLose.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dc7bb6f043c4e454abd8f1da5e8db68c
+    m_Address: GamePhaseNotifier_GameStart.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -95,6 +130,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e29bbf9a7e73da04f9a247f202282892
+    m_Address: GamePhaseNotifier_Player2sTurn.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ececf01df804e8f449356c3736f07db1
     m_Address: CombinationNotifier_LargeStraight.prefab
     m_ReadOnly: 0
@@ -102,6 +142,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: effec78bd23522444815a3f4ebdcf9d9
     m_Address: CombinationNotifier_Sixes.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f2c3ae21905b7284387dd3241307f78d
+    m_Address: GamePhaseNotifier_OpponentsTurn.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

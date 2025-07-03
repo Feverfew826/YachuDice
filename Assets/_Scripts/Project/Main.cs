@@ -183,6 +183,8 @@ public static class Main
     {
         try
         {
+            // 노트북이 구려서 PlayMode 진입 후 버벅이면서 애니메이션이 끊기는게 보기 안좋아서 잠시 기다렸다 시작.
+            await UniTask.Delay(System.TimeSpan.FromSeconds(1), cancellationToken: cancellationToken);
             var rootGameObjects = SceneManager.GetActiveScene().GetRootGameObjects();
             if (rootGameObjects.TryGetComponent<NetworkGameManager>(out var networkGameManager))
             {
