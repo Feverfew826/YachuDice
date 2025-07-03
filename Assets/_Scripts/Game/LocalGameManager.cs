@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 using Cysharp.Threading.Tasks;
@@ -9,6 +10,7 @@ using UnityEngine.Assertions;
 public class LocalGameManager : MonoBehaviour
 {
     [SerializeField] private GameElementContainer _gameElementContainer;
+    [SerializeField] private List<EmotionButtonPanel> _emotionButtonPanels;
 
     public async UniTask<LocalGameResult> PlayGameAsync(LocalGameParameter gameParameters, CancellationToken cancellationToken)
     {
@@ -17,6 +19,17 @@ public class LocalGameManager : MonoBehaviour
         using var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, destroyCancellationToken, _gameElementContainer.QuitCancellationToken);
         try
         {
+            for (var i = 0; i < _emotionButtonPanels.Count; i++)
+            {
+                // Hard-coded!! But it's fine for now.
+                var xOffset = i switch
+                {
+                    0 => -375,
+                    _ => 425,
+                };
+                PlayEmotionNotifierLoopAsync(_emotionButtonPanels[i], xOffset, linkedCancellationTokenSource.Token).Forget();
+            }
+
             await PlayGameAsync(linkedCancellationTokenSource.Token);
         }
         catch (OperationCanceledException)
@@ -125,6 +138,15 @@ public class LocalGameManager : MonoBehaviour
         }
 
         playerScoreBoard.Highlight(false);
+    }
+
+    private async UniTask PlayEmotionNotifierLoopAsync(EmotionButtonPanel emotionButtonPanel, int xOffset, CancellationToken cancellationToken)
+    {
+        while (true)
+        {
+            var emotion = await emotionButtonPanel.OnEmotionNotifierRequested.ToUniTask(true, cancellationToken);
+            await EmotionNotifier.ShowEmotionNotifierAsync(emotion, xOffset, cancellationToken);
+        }
     }
 
     public struct LocalGameParameter

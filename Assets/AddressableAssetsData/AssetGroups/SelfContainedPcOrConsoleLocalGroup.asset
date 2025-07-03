@@ -25,6 +25,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2f8bdbe931a8e3a419830f851404cdc5
+    m_Address: EmotionNotifier_Four.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 461fad5a5ef71a142a175fdeb56a93f1
     m_Address: GamePhaseNotifier_Player1Win.prefab
     m_ReadOnly: 0
@@ -32,6 +37,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 46eaaaaed111dc3429ff8274280353ab
     m_Address: CombinationNotifier_Threes.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4a09af403469b3c4cbd809e08d8a0625
+    m_Address: EmotionNotifier_One.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -65,6 +75,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6e74234b222b2a440b4b761552d7b4df
+    m_Address: EmotionNotifier_Two.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 71c4be2104e7a1f42ba44145459c3732
     m_Address: CombinationNotifier_Deuces.prefab
     m_ReadOnly: 0
@@ -72,6 +87,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 77b01bc9a08323c41a815015d5ec53da
     m_Address: GamePhaseNotifier_YouWin.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 80a0212614baca540be5bf239447cd61
+    m_Address: EmotionNotifier_Three.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -85,6 +105,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8e01acb05b5a2e64496d4322bfc7d314
+    m_Address: EmotionNotifier_Yeah.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 92c73fec619c11944a1cba0cfa13ad44
     m_Address: JoinCodeDisplayModal.prefab
     m_ReadOnly: 0
@@ -92,6 +117,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 93d5b1f5cab25ec47815cf112382db84
     m_Address: DisconnectionNotifyModal.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97a314e4ed190e6479ffda21c989ee39
+    m_Address: EmotionNotifier_Six.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -107,6 +137,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b9ecc02f79b2a274ca1ead988b001062
     m_Address: CombinationNotifier_Aces.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d506ba26b2d2d2b4e8d73c07b89e4255
+    m_Address: EmotionNotifier_Five.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -137,6 +172,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ececf01df804e8f449356c3736f07db1
     m_Address: CombinationNotifier_LargeStraight.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed821afccf1dd6d44b2205db2d2236b5
+    m_Address: EmotionNotifier_No.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
