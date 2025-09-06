@@ -325,6 +325,10 @@ public class GameElementContainer : MonoBehaviour
     {
         for (var i = 0; i < Constants.DiceNum; i++)
             _keepFlags[i] = false;
+
+        // ToDo: _keepFlags 값을 제어할 때, _rollButton을 갱신하도록 수정
+        var hasRollableDice = _keepFlags.Any(elmt => elmt == false);
+        _rollButton.interactable = hasRollableDice;
     }
 }
 
