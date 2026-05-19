@@ -1,0 +1,17 @@
+﻿<Solution>
+  <Project Path="YachuDice.Authentication.csproj" />
+  <Project Path="YachuDice.UnityServices.csproj" />
+  <Project Path="YachuDice.Environment.Development.False.csproj" />
+  <Project Path="YachuDice.AuthenticatedRelayNetworkFacade.csproj" />
+  <Project Path="YachuDice.Game.csproj" />
+  <Project Path="YachuDice.Relay.csproj" />
+  <Project Path="YachuDice.Title.csproj" />
+  <Project Path="YachuDice.NetworkGame.csproj" />
+  <Project Path="YachuDice.Project.csproj" />
+  <Project Path="YachuDice.Environment.Interface.csproj" />
+  <Project Path="YachuDice.Primitive.csproj" />
+  <Project Path="YachuDice.AddressableWrapper.csproj" />
+  <Project Path="YachuDice.Utilities.csproj" />
+  <Project Path="YachuDice.Environment.EditorEnvironment.csproj" />
+  <Project Path="YachuDice.Environment.csproj" />
+</Solution>

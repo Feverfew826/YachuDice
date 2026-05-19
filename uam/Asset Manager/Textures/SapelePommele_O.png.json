@@ -1,0 +1,20 @@
+{
+    "serializationVersion": [
+        4,
+        0
+    ],
+    "path": "Textures/SapelePommele_O.png",
+    "assetName": "Sapele Pommele Coat Sienna (URP)",
+    "assetId": "68486ce0a835c50b6627395c",
+    "datasetId": "1c0bdab7-6928-4c96-894c-210e9bed15ac",
+    "projectId": "a14d4389-d5fd-4e05-a969-ec3550d9b2ef",
+    "organizationId": "14568544161869",
+    "versionId": "b2fc8b65-252e-4e36-a9af-bb0f10c45154",
+    "sequenceNumber": 1,
+    "updated": "2025-06-10T17:35:29.6120000Z",
+    "timestamp": 1749576953,
+    "checksum": "e5681f9ba6266fc06aae163cc299edbb",
+    "metaFileChecksum": "994bf0e217829347d0055792b7535135",
+    "metaFileTimestamp": 1749576951,
+    "unityGUID": "5054cd8a808be8c449be287be07e1bc0"
+}

@@ -48,9 +48,15 @@ public class GamePhaseNotifier
 
 public class EmotionNotifier
 {
-    public static async UniTask ShowEmotionNotifierAsync(EmotionButtonPanel.Emotion emotion, int xOffset, CancellationToken cancellationToken)
+    public enum Character
     {
-        using var animatorLoad = await AddressableWrapper.DisposableInstantiateAsync<Animator>($"EmotionNotifier_{emotion}.prefab");
+        Girl,
+        Boy,
+    }
+
+    public static async UniTask ShowEmotionNotifierAsync(EmotionButtonPanel.Emotion emotion, Character character, int xOffset, CancellationToken cancellationToken)
+    {
+        using var animatorLoad = await AddressableWrapper.DisposableInstantiateAsync<Animator>($"EmotionNotifier_{character}_{emotion}.prefab");
         var animator = animatorLoad.Instance;
 
         // Hard-coded!! But it's fine for now.

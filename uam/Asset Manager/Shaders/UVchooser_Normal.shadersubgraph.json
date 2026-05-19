@@ -1,0 +1,20 @@
+{
+    "serializationVersion": [
+        4,
+        0
+    ],
+    "path": "Shaders/UVchooser_Normal.shadersubgraph",
+    "assetName": "Fabric Twill Coarse Ochre (URP)",
+    "assetId": "684867fca835c50b66273948",
+    "datasetId": "6cea7bae-3a49-4fd6-ad53-fb7ab765ebd4",
+    "projectId": "a14d4389-d5fd-4e05-a969-ec3550d9b2ef",
+    "organizationId": "14568544161869",
+    "versionId": "e7cd58b4-d66e-4dcd-82ab-be128f1bcea0",
+    "sequenceNumber": 1,
+    "updated": "2025-06-10T17:14:39.4160000Z",
+    "timestamp": 1749575840,
+    "checksum": "31daf51cc5953a79de282a52ce0261c3",
+    "metaFileChecksum": "2478235227cbc248ebd7f367da6bd732",
+    "metaFileTimestamp": 1749575840,
+    "unityGUID": "9afb399a6c73e694682730a428a47304"
+}

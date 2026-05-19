@@ -3,6 +3,8 @@ using System.Linq;
 
 public static class GameManagerCommonLogic
 {
+    public static Combination[] SpecialCombination = { Combination.FourOfAKind, Combination.FullHouse, Combination.SmallStraight, Combination.LargeStraight, Combination.Yacht };
+
     public static (Combination combination, int score) ProcessUserChoiceConfirm(GameElementContainer gameElementContainer, PlayerScoreBoard playerScoreBoard, Combination confirmedCombination)
     {
         foreach (var combination in Constants.AllCombinations)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 using Cysharp.Threading.Tasks;
@@ -22,12 +23,12 @@ public class LocalGameManager : MonoBehaviour
             for (var i = 0; i < _emotionButtonPanels.Count; i++)
             {
                 // Hard-coded!! But it's fine for now.
-                var xOffset = i switch
+                var (xOffset, character) = i switch
                 {
-                    0 => -375,
-                    _ => 425,
+                    0 => (-375, EmotionNotifier.Character.Girl),
+                    _ => (425, EmotionNotifier.Character.Boy),
                 };
-                PlayEmotionNotifierLoopAsync(_emotionButtonPanels[i], xOffset, linkedCancellationTokenSource.Token).Forget();
+                PlayEmotionNotifierLoopAsync(_emotionButtonPanels[i], character, xOffset, linkedCancellationTokenSource.Token).Forget();
             }
 
             await PlayGameAsync(linkedCancellationTokenSource.Token);
@@ -119,7 +120,18 @@ public class LocalGameManager : MonoBehaviour
             {
                 var rollResult = await gameElementContainer.RollDicesAsync(cancellationToken);
 
-                playerScoreBoard.SetPreviewScores(GameManagerCommonLogic.CalculateCombinationScores(rollResult));
+                var combinationScores = GameManagerCommonLogic.CalculateCombinationScores(rollResult);
+
+                playerScoreBoard.SetPreviewScores(combinationScores);
+
+                foreach (var combination in GameManagerCommonLogic.SpecialCombination.Reverse())
+                {
+                    if (combinationScores[combination] > 0)
+                    {
+                        await CombinationNotifier.ShowCombinationNotifierAsync(combination, cancellationToken);
+                        break;
+                    }
+                }
 
                 rollCount++;
             }
@@ -140,12 +152,12 @@ public class LocalGameManager : MonoBehaviour
         playerScoreBoard.Highlight(false);
     }
 
-    private async UniTask PlayEmotionNotifierLoopAsync(EmotionButtonPanel emotionButtonPanel, int xOffset, CancellationToken cancellationToken)
+    private async UniTask PlayEmotionNotifierLoopAsync(EmotionButtonPanel emotionButtonPanel, EmotionNotifier.Character character, int xOffset, CancellationToken cancellationToken)
     {
         while (true)
         {
             var emotion = await emotionButtonPanel.OnEmotionNotifierRequested.ToUniTask(true, cancellationToken);
-            await EmotionNotifier.ShowEmotionNotifierAsync(emotion, xOffset, cancellationToken);
+            await EmotionNotifier.ShowEmotionNotifierAsync(emotion, character, xOffset, cancellationToken);
         }
     }
 

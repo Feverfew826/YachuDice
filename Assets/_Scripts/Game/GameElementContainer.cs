@@ -226,6 +226,48 @@ public class GameElementContainer : MonoBehaviour
         foreach (var dice in _dices)
             dice.Stop();
 
+        var results = new List<int>();
+        foreach (var dice in _dices)
+            results.Add(dice.GetResult());
+
+        results.Sort();
+
+        var shouldMove = new List<bool>();
+        var moveDiceAndKeepFlags = new List<(Dice dice, bool keepFlag)>();
+        for (var i = 0; i < _dices.Length; i++)
+        {
+            if (_keepFlags[i] == true)
+            {
+                if (_dices[i].GetResult() == results[i])
+                {
+                    shouldMove.Add(false);
+                }
+                else
+                {
+                    shouldMove.Add(true);
+                    moveDiceAndKeepFlags.Add((_dices[i], _keepFlags[i]));
+                }
+            }
+            else
+            {
+                shouldMove.Add(true);
+                moveDiceAndKeepFlags.Add((_dices[i], _keepFlags[i]));
+            }
+        }
+
+        moveDiceAndKeepFlags.Sort((a, b) => a.dice.GetResult().CompareTo(b.dice.GetResult()));
+
+        var moveDiceAndKeepFlagsIndex = 0;
+        for (var i = 0; i < _dices.Length; i++)
+        {
+            if (shouldMove[i] == true)
+            {
+                _dices[i] = moveDiceAndKeepFlags[moveDiceAndKeepFlagsIndex].dice;
+                _keepFlags[i] = moveDiceAndKeepFlags[moveDiceAndKeepFlagsIndex].keepFlag;
+                moveDiceAndKeepFlagsIndex++;
+            }
+        }
+
         await MoveDicesToInitialPositionAsync(cancellationToken);
 
         var rollResult = new List<int>();

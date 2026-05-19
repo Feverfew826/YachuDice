@@ -45,6 +45,7 @@ namespace YachuDice.Relay
 
             Debug.Log($"server: {_allocation.ConnectionData[0]} {_allocation.ConnectionData[1]}");
             Debug.Log($"server: {_allocation.AllocationId}");
+            Debug.Log($"[Relay] Selected region: {_allocation.Region}");
 
             _relayServerData = AllocationUtils.ToRelayServerData(_allocation, ConnectionType);
 

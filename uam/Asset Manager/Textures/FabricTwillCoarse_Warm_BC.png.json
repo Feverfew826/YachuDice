@@ -1,0 +1,20 @@
+{
+    "serializationVersion": [
+        4,
+        0
+    ],
+    "path": "Textures/FabricTwillCoarse_Warm_BC.png",
+    "assetName": "Fabric Twill Coarse Ochre (URP)",
+    "assetId": "684867fca835c50b66273948",
+    "datasetId": "6cea7bae-3a49-4fd6-ad53-fb7ab765ebd4",
+    "projectId": "a14d4389-d5fd-4e05-a969-ec3550d9b2ef",
+    "organizationId": "14568544161869",
+    "versionId": "e7cd58b4-d66e-4dcd-82ab-be128f1bcea0",
+    "sequenceNumber": 1,
+    "updated": "2025-06-10T17:14:39.4160000Z",
+    "timestamp": 1749575842,
+    "checksum": "5c56d9753982b6cd9771a7b88c1600ae",
+    "metaFileChecksum": "6d71e015597f2607c87dd14600fb62f7",
+    "metaFileTimestamp": 1749575840,
+    "unityGUID": "87f1c657da6ce9946845b67f219d30b1"
+}

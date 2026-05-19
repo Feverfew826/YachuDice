@@ -20,13 +20,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 102d07ca1b6657b4c9b99e850f622e4d
+    m_Address: EmotionNotifier_Boy_Four.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1ae54f1513af7c94aa4e2081b1f71b60
     m_Address: IngameDebugConsole.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2f8bdbe931a8e3a419830f851404cdc5
-    m_Address: EmotionNotifier_Four.prefab
+    m_Address: EmotionNotifier_Girl_Four.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 36d053188ea47714ba8795ce6f8a639d
+    m_Address: EmotionNotifier_Boy_One.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -41,7 +51,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 4a09af403469b3c4cbd809e08d8a0625
-    m_Address: EmotionNotifier_One.prefab
+    m_Address: EmotionNotifier_Girl_One.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -76,7 +86,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6e74234b222b2a440b4b761552d7b4df
-    m_Address: EmotionNotifier_Two.prefab
+    m_Address: EmotionNotifier_Girl_Two.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -90,8 +100,13 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7c4f559bf803d004ca8c6e8cce2d307e
+    m_Address: EmotionNotifier_Boy_No.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 80a0212614baca540be5bf239447cd61
-    m_Address: EmotionNotifier_Three.prefab
+    m_Address: EmotionNotifier_Girl_Three.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -106,7 +121,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8e01acb05b5a2e64496d4322bfc7d314
-    m_Address: EmotionNotifier_Yeah.prefab
+    m_Address: EmotionNotifier_Girl_Yeah.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -120,8 +135,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 97a314e4ed190e6479ffda21c989ee39
-    m_Address: EmotionNotifier_Six.prefab
+  - m_GUID: a1e2a6ba08d930d46b9a9857d55894d9
+    m_Address: EmotionNotifier_Boy_Five.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -130,8 +145,23 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a41b99e5ca2b0f443a89443dee3c9702
+    m_Address: EmotionNotifier_Boy_Three.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a6856199ead579d448b8b8e745c61cb6
     m_Address: GamePhaseNotifier_MyTurn.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a6f7bdb2a583a8843b75e676e8ad59a0
+    m_Address: EmotionNotifier_Boy_Two.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b598d691d6d6a4d4496fb5b370faea95
+    m_Address: EmotionNotifier_Boy_Yeah.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -141,7 +171,7 @@ MonoBehaviour:
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d506ba26b2d2d2b4e8d73c07b89e4255
-    m_Address: EmotionNotifier_Five.prefab
+    m_Address: EmotionNotifier_Girl_Five.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -170,13 +200,18 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e321b4ba24148c04abf4fbe68cbd3460
+    m_Address: EmotionNotifier_Boy_Six.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ececf01df804e8f449356c3736f07db1
     m_Address: CombinationNotifier_LargeStraight.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ed821afccf1dd6d44b2205db2d2236b5
-    m_Address: EmotionNotifier_No.prefab
+    m_Address: EmotionNotifier_Girl_No.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

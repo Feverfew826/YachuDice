@@ -5,7 +5,7 @@ using System.Threading;
 
 using Cysharp.Threading.Tasks;
 
-using Unity.Multiplayer.Playmode;
+
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 
@@ -130,7 +130,7 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
     {
         if (networkManager.IsHost == false && networkManager.IsClient == false)
         {
-            var mppmTag = CurrentPlayer.ReadOnlyTags();
+            var mppmTag = Unity.Multiplayer.PlayMode.CurrentPlayer.ReadOnlyTags();
             if (mppmTag.Contains("Host"))
             {
                 return await StartHostThenShowJoinCodeAsync(networkManager, unityTransport, cancellationToken);

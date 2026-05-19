@@ -17,6 +17,7 @@ using YachuDice.Utilities;
 public class NetworkGameManager : NetworkBehaviour
 {
     [SerializeField] private GameElementContainer _gameElementContainer;
+    [SerializeField] private EmotionButtonPanel _emotionButtonPanel;
 
     private ReactiveCommand<bool> _isHostContinueTurn = new();
     private ReactiveCommand _hostTurnFinished = new();
@@ -40,11 +41,15 @@ public class NetworkGameManager : NetworkBehaviour
             if (authenticatedRelayNetworkFacade.IsHost)
             {
                 _isHost = true;
+                if (_emotionButtonPanel != null)
+                    PlayEmotionNotifierLoopAsync(_emotionButtonPanel, linkedCancellationTokenSource.Token).Forget();
                 await PlayGameAsHostAsync(linkedCancellationTokenSource.Token);
             }
             else if (authenticatedRelayNetworkFacade.IsClient)
             {
                 _isHost = false;
+                if (_emotionButtonPanel != null)
+                    PlayEmotionNotifierLoopAsync(_emotionButtonPanel, linkedCancellationTokenSource.Token).Forget();
                 await PlayGameAsClientAsync(linkedCancellationTokenSource.Token);
             }
         }
@@ -171,9 +176,20 @@ public class NetworkGameManager : NetworkBehaviour
             {
                 var rollResult = await gameElementContainer.RollDicesAsync(cancellationToken);
 
-                playerScoreBoard.SetPreviewScores(GameManagerCommonLogic.CalculateCombinationScores(rollResult));
+                var combinationScores = GameManagerCommonLogic.CalculateCombinationScores(rollResult);
+
+                playerScoreBoard.SetPreviewScores(combinationScores);
 
                 ClientRollResultRpc(rollResult.ToArray());
+
+                foreach (var combination in GameManagerCommonLogic.SpecialCombination.Reverse())
+                {
+                    if (combinationScores[combination] > 0)
+                    {
+                        await CombinationNotifier.ShowCombinationNotifierAsync(combination, cancellationToken);
+                        break;
+                    }
+                }
 
                 rollCount++;
             }
@@ -268,7 +284,18 @@ public class NetworkGameManager : NetworkBehaviour
             {
                 var rollResult = await _clientRollResult.ToUniTask(true, cancellationToken);
 
-                playerScoreBoard.SetPreviewScores(GameManagerCommonLogic.CalculateCombinationScores(rollResult));
+                var combinationScores = GameManagerCommonLogic.CalculateCombinationScores(rollResult);
+
+                playerScoreBoard.SetPreviewScores(combinationScores);
+
+                foreach (var combination in GameManagerCommonLogic.SpecialCombination.Reverse())
+                {
+                    if (combinationScores[combination] > 0)
+                    {
+                        await CombinationNotifier.ShowCombinationNotifierAsync(combination, cancellationToken);
+                        break;
+                    }
+                }
 
                 rollCount++;
             }
@@ -335,6 +362,27 @@ public class NetworkGameManager : NetworkBehaviour
     private void UpdateKeepButtonsRpc(int index, bool isKeep)
     {
         _gameElementContainer.KeepFlags[index] = isKeep;
+    }
+
+    private async UniTask PlayEmotionNotifierLoopAsync(EmotionButtonPanel emotionButtonPanel, CancellationToken cancellationToken)
+    {
+        // 수신자 본인 기준: 내 emotion은 왼쪽+Girl, 상대 emotion은 오른쪽+Boy (LocalGameManager의 1P/2P 배치와 유사).
+        const int MyXOffset = -375;
+        const EmotionNotifier.Character MyCharacter = EmotionNotifier.Character.Girl;
+        while (true)
+        {
+            var emotion = await emotionButtonPanel.OnEmotionNotifierRequested.ToUniTask(true, cancellationToken);
+            EmotionNotifierRequestRpc(emotion);
+            await EmotionNotifier.ShowEmotionNotifierAsync(emotion, MyCharacter, MyXOffset, cancellationToken);
+        }
+    }
+
+    [Rpc(SendTo.NotMe)]
+    private void EmotionNotifierRequestRpc(EmotionButtonPanel.Emotion emotion)
+    {
+        const int OpponentXOffset = 425;
+        const EmotionNotifier.Character OpponentCharacter = EmotionNotifier.Character.Boy;
+        EmotionNotifier.ShowEmotionNotifierAsync(emotion, OpponentCharacter, OpponentXOffset, destroyCancellationToken).Forget();
     }
 
     public struct NetworkUserChoice : INetworkSerializable

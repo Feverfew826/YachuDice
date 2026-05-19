@@ -1,0 +1,20 @@
+{
+    "serializationVersion": [
+        4,
+        0
+    ],
+    "path": "Textures/LeatherLargeGrain_NM.png",
+    "assetName": "Fabric Twill Coarse Ochre (URP)",
+    "assetId": "684867fca835c50b66273948",
+    "datasetId": "6cea7bae-3a49-4fd6-ad53-fb7ab765ebd4",
+    "projectId": "a14d4389-d5fd-4e05-a969-ec3550d9b2ef",
+    "organizationId": "14568544161869",
+    "versionId": "e7cd58b4-d66e-4dcd-82ab-be128f1bcea0",
+    "sequenceNumber": 1,
+    "updated": "2025-06-10T17:14:39.4160000Z",
+    "timestamp": 1749575849,
+    "checksum": "c274bf367c18ba9bf7359d1d43cce17d",
+    "metaFileChecksum": "426093f7bd8644348849df3486aa9c0d",
+    "metaFileTimestamp": 1749575840,
+    "unityGUID": "f79c66ec2c0dde24c9ba21939ce89ed8"
+}

@@ -1,0 +1,20 @@
+{
+    "serializationVersion": [
+        4,
+        0
+    ],
+    "path": "Textures/QuiltedMaple_O.png",
+    "assetName": "Quilted Maple Coat Bronze (URP)",
+    "assetId": "684868417149aa1d23a2bec0",
+    "datasetId": "1296b34e-da61-40de-a467-531338a8b9e8",
+    "projectId": "a14d4389-d5fd-4e05-a969-ec3550d9b2ef",
+    "organizationId": "14568544161869",
+    "versionId": "3fd147ae-62dc-4605-aa5d-c463f674441f",
+    "sequenceNumber": 1,
+    "updated": "2025-06-10T17:15:47.2880000Z",
+    "timestamp": 1749575870,
+    "checksum": "00da2567702e1f826640f2086d672e2f",
+    "metaFileChecksum": "4ffe9b0d8bf6f327eec085bae1e2d2fd",
+    "metaFileTimestamp": 1749575868,
+    "unityGUID": "7c1c72836418b9f45b93a7153d926a46"
+}
