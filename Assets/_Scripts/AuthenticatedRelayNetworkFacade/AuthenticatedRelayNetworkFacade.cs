@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -22,7 +23,10 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
     private static bool _isExistCurrentlyWorkingInstance;
     public static bool IsExistCurrentlyWorkingInstance => _isExistCurrentlyWorkingInstance;
 
-    private const int MaxConnections = 2;
+    public const int MinPlayers = 2;
+    public const int MaxPlayers = 4;
+    // Unity Relay 의 maxConnections 는 호스트를 제외한 추가 peer 수.
+    private const int RelayMaxConnections = MaxPlayers - 1;
 
     private bool _isInitialized;
     private bool _isDisposed;
@@ -31,10 +35,17 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
     private NetworkManager _networkManager;
     private UnityTransport _unityTransport;
 
+    private ulong[] _playerOrder;
+    private bool _isLobbyClosed;
+
     public NetworkManager NetworkManager => _networkManager;
 
     public bool IsHost => _networkManager.IsHost;
     public bool IsClient => _networkManager.IsClient;
+
+    // 호스트가 "시작" 을 누른 시점에 캡처된 ClientId 배열 (ulong 오름차순). 인덱스가 곧 playerIndex.
+    // 호스트만 직접 보관; 클라이언트는 NetworkGameManager 가 StartGameRpc 를 통해 별도로 받음.
+    public IReadOnlyList<ulong> PlayerOrder => _playerOrder;
 
     // 인스턴스 수를 관리하기 위해 생성자 감춤.
     // 싱글톤으로 만들지 않는 이유는 아무렇게나 인스턴스에 접근하는 것을 허용하지 않기 위해서.
@@ -89,6 +100,7 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
 
             if (_networkManager != null)
             {
+                _networkManager.OnClientConnectedCallback -= OnClientConnectedAfterLockHandler;
                 _networkManager.Shutdown();
                 _networkManagerLoad.Dispose();
                 _networkManager = null;
@@ -126,7 +138,7 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
         return await RetrieveJoinCodeThenConnectToHostAsync(_networkManager, _unityTransport, cancellationToken);
     }
 
-    private static async UniTask<bool> AutoConnectIfNotStartedNetworkAsync(NetworkManager networkManager, UnityTransport unityTransport, CancellationToken cancellationToken)
+    private async UniTask<bool> AutoConnectIfNotStartedNetworkAsync(NetworkManager networkManager, UnityTransport unityTransport, CancellationToken cancellationToken)
     {
         if (networkManager.IsHost == false && networkManager.IsClient == false)
         {
@@ -150,7 +162,7 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
         }
     }
 
-    private static async UniTask<bool> StartHostThenShowJoinCodeAsync(NetworkManager networkManager, UnityTransport unityTransport, CancellationToken cancellationToken)
+    private async UniTask<bool> StartHostThenShowJoinCodeAsync(NetworkManager networkManager, UnityTransport unityTransport, CancellationToken cancellationToken)
     {
         var relayHost = new RelayHost();
 
@@ -158,7 +170,34 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
         if (startHostResult == false)
             return false;
 
-        return await JoinCodeDisplayModal.OpenJoinCodeDisplayModalAsync(relayHost.JoinCode, () => networkManager.ConnectedClients.Count > 1, cancellationToken);
+        var startClicked = await JoinCodeDisplayModal.OpenJoinCodeDisplayModalAsync(relayHost.JoinCode, networkManager, MinPlayers, MaxPlayers, cancellationToken);
+        if (startClicked == false)
+            return false;
+
+        LockLobbyAndCapturePlayerOrder(networkManager);
+        return true;
+    }
+
+    private void LockLobbyAndCapturePlayerOrder(NetworkManager networkManager)
+    {
+        if (_isLobbyClosed)
+            return;
+        _isLobbyClosed = true;
+
+        _playerOrder = networkManager.ConnectedClientsIds.ToArray();
+        Array.Sort(_playerOrder);
+
+        networkManager.OnClientConnectedCallback += OnClientConnectedAfterLockHandler;
+    }
+
+    private void OnClientConnectedAfterLockHandler(ulong clientId)
+    {
+        if (_networkManager == null || _networkManager.IsServer == false)
+            return;
+        if (_playerOrder != null && Array.IndexOf(_playerOrder, clientId) >= 0)
+            return;
+        // 시작 후 들어온 클라이언트는 즉시 퇴장.
+        _networkManager.DisconnectClient(clientId);
     }
 
     private static async UniTask<bool> RetrieveJoinCodeThenConnectToHostAsync(NetworkManager networkManager, UnityTransport unityTransport, CancellationToken cancellationToken)
@@ -197,7 +236,7 @@ public class AuthenticatedRelayNetworkFacade : IDisposable
 
         if (relayHost.IsAllocationCreated == false)
         {
-            var createAllocationResult = await relayHost.CreateAllocationAsync(MaxConnections, cancellationToken);
+            var createAllocationResult = await relayHost.CreateAllocationAsync(RelayMaxConnections, cancellationToken);
             if (createAllocationResult == false)
                 return false;
         }

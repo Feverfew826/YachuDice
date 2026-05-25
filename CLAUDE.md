@@ -91,6 +91,10 @@ Assets/_Scripts/Environment/EnvironmentInjector.cs
 
 게임의 핵심 상수(`DiceNum=5`, `TurnNum=12`, `RollNum=10`, `Combination` enum 12종)는 `Game/GameElementContainer.cs`의 `Constants`와 `Game/Common.cs`에 정의되어 있습니다.
 
+## 작업 원칙
+
+- **코드 수정은 가급적 최소한으로 한다.** 기능을 추가하거나 버그를 고칠 때, 요청된 범위 바깥의 리팩토링·정리·구조 변경은 하지 않습니다. 같은 결과를 더 작은 diff로 달성할 수 있다면 그 방법을 택합니다. 큰 폭의 재구성이 필요해 보이면 먼저 사용자에게 확인합니다.
+
 ## 코딩 컨벤션
 
 - `.editorconfig` 가 리포 루트에 있으며 코드 스타일을 강제합니다. C# 파일은 **CRLF, 4-space indent, UTF-8, 마지막 줄 개행 없음, 후행 공백 제거**가 기본. 새 파일 작성 시 따르세요.

@@ -20,11 +20,15 @@ public class NetworkGameManager : NetworkBehaviour
     [SerializeField] private EmotionButtonPanel _emotionButtonPanel;
 
     private ReactiveCommand<bool> _isHostContinueTurn = new();
+    private ReactiveCommand<bool> _isOtherPlayerContinueTurn = new();
     private ReactiveCommand _hostTurnFinished = new();
     private ReactiveCommand<List<int>> _clientRollResult = new();
     private ReactiveCommand<UserChoice> _clientUserChoice = new();
 
+    private int _playerCount = 0;
     private bool _isHost;
+    private int _myIndex = 0;
+    private UniTaskCompletionSource<int> _myIndexAssigned = new();
 
     public async UniTask<NetworkGameResult> PlayGameAsync(NetworkGameParameter gameParameters, AuthenticatedRelayNetworkFacade authenticatedRelayNetworkFacade, CancellationToken cancellationToken)
     {
@@ -41,16 +45,50 @@ public class NetworkGameManager : NetworkBehaviour
             if (authenticatedRelayNetworkFacade.IsHost)
             {
                 _isHost = true;
+                var playerOrder = authenticatedRelayNetworkFacade.PlayerOrder.ToArray();
+                _myIndex = Array.IndexOf(playerOrder, authenticatedRelayNetworkFacade.NetworkManager.LocalClientId);
+
+                _playerCount = playerOrder.Length;
+                _myIndex = 0;
+                AssignClientIndicesRpc(playerOrder);
+
+                var playerCount = _playerCount;
+                var playerNames = new string[playerCount];
+
+                playerNames[0] = $"You";
+                for (var i = 1; i < playerCount; i++)
+                {
+                    playerNames[i] = $"Player {i + 1}";
+                }
+
+                _gameElementContainer.InitializePlayerBoard(playerNames);
+
                 if (_emotionButtonPanel != null)
                     PlayEmotionNotifierLoopAsync(_emotionButtonPanel, linkedCancellationTokenSource.Token).Forget();
-                await PlayGameAsHostAsync(linkedCancellationTokenSource.Token);
+                await PlayGameAsHostAsync(playerCount, linkedCancellationTokenSource.Token);
             }
             else if (authenticatedRelayNetworkFacade.IsClient)
             {
                 _isHost = false;
+                _myIndex = await _myIndexAssigned.Task.AttachExternalCancellation(linkedCancellationTokenSource.Token);
+
+                var playerCount = _playerCount;
+                var playerNames = new string[playerCount];
+
+                playerNames[0] = $"Player 1";
+                for (var i = 1; i < playerCount; i++)
+                {
+                    if (i == _myIndex)
+                        playerNames[i] = $"You";
+                    else
+                        playerNames[i] = $"Player {i + 1}";
+                }
+
+                _gameElementContainer.InitializePlayerBoard(playerNames);
+
                 if (_emotionButtonPanel != null)
                     PlayEmotionNotifierLoopAsync(_emotionButtonPanel, linkedCancellationTokenSource.Token).Forget();
-                await PlayGameAsClientAsync(linkedCancellationTokenSource.Token);
+                await PlayGameAsClientAsync(playerCount, linkedCancellationTokenSource.Token);
             }
         }
         catch (OperationCanceledException)
@@ -83,13 +121,17 @@ public class NetworkGameManager : NetworkBehaviour
         _gameElementContainer.Quit();
     }
 
-    private async UniTask PlayGameAsHostAsync(CancellationToken cancellationToken)
+    private async UniTask PlayGameAsHostAsync(int playerCount, CancellationToken cancellationToken)
     {
-        for (var i = 0; i < Constants.TurnNum; i++)
+        for (var turnIndex = 0; turnIndex < Constants.TurnNum; turnIndex++)
         {
             await PlayHostTurnAsync(cancellationToken);
             HostTurnFinishedRpc();
-            await WaitClientTurnAsync(cancellationToken);
+
+            for (var playerIndex = 1; playerIndex < playerCount; playerIndex++)
+            {
+                await WaitClientTurnAsHostAsync(playerIndex, cancellationToken);
+            }
         }
     }
 
@@ -150,10 +192,10 @@ public class NetworkGameManager : NetworkBehaviour
         playerScoreBoard.Highlight(false);
     }
 
-    private async UniTask WaitClientTurnAsync(CancellationToken cancellationToken)
+    private async UniTask WaitClientTurnAsHostAsync(int playerIndex, CancellationToken cancellationToken)
     {
         var gameElementContainer = _gameElementContainer;
-        var playerScoreBoard = gameElementContainer.PlayerScoreBoards[1];
+        var playerScoreBoard = gameElementContainer.PlayerScoreBoards[playerIndex];
 
         playerScoreBoard.Highlight(true);
         gameElementContainer.ResetKeepFlags();
@@ -180,7 +222,7 @@ public class NetworkGameManager : NetworkBehaviour
 
                 playerScoreBoard.SetPreviewScores(combinationScores);
 
-                ClientRollResultRpc(rollResult.ToArray());
+                ClientRollResultRpc(playerIndex, rollResult.ToArray());
 
                 foreach (var combination in GameManagerCommonLogic.SpecialCombination.Reverse())
                 {
@@ -197,7 +239,7 @@ public class NetworkGameManager : NetworkBehaviour
             {
                 var updatedScore = GameManagerCommonLogic.ProcessUserChoiceConfirm(gameElementContainer, playerScoreBoard, userChoice.combination);
 
-                ClientUpdatedScoreRpc(updatedScore.combination, updatedScore.score);
+                ClientUpdatedScoreRpc(playerIndex, updatedScore.combination, updatedScore.score);
 
                 break;
             }
@@ -210,19 +252,25 @@ public class NetworkGameManager : NetworkBehaviour
         playerScoreBoard.Highlight(false);
     }
 
-    private async UniTask PlayGameAsClientAsync(CancellationToken cancellationToken)
+    private async UniTask PlayGameAsClientAsync(int playerCount, CancellationToken cancellationToken)
     {
-        for (var i = 0; i < Constants.TurnNum; i++)
+        for (var turnIndex = 0; turnIndex < Constants.TurnNum; turnIndex++)
         {
-            await WaitHostTurnAsync(cancellationToken);
-            await PlayClientTurnAsync(cancellationToken);
+            await WaitHostTurnAsync(0, cancellationToken);
+            for (var playerIndex = 1; playerIndex < playerCount; playerIndex++)
+            {
+                if (_myIndex == playerIndex)
+                    await PlayClientTurnAsync(cancellationToken);
+                else
+                    await WaitClientTurnAsClientAsync(playerIndex, cancellationToken);
+            }
         }
     }
 
-    private async UniTask WaitHostTurnAsync(CancellationToken cancellationToken)
+    private async UniTask WaitHostTurnAsync(int playerIndex, CancellationToken cancellationToken)
     {
         var gameElementContainer = _gameElementContainer;
-        var playerScoreBoard = gameElementContainer.PlayerScoreBoards[0];
+        var playerScoreBoard = gameElementContainer.PlayerScoreBoards[playerIndex];
 
         playerScoreBoard.Highlight(true);
         gameElementContainer.ResetKeepFlags();
@@ -251,7 +299,7 @@ public class NetworkGameManager : NetworkBehaviour
     private async UniTask PlayClientTurnAsync(CancellationToken cancellationToken)
     {
         var gameElementContainer = _gameElementContainer;
-        var playerScoreBoard = gameElementContainer.PlayerScoreBoards[1];
+        var playerScoreBoard = gameElementContainer.PlayerScoreBoards[_myIndex];
 
         playerScoreBoard.Highlight(true);
         gameElementContainer.ResetKeepFlags();
@@ -312,6 +360,51 @@ public class NetworkGameManager : NetworkBehaviour
         playerScoreBoard.Highlight(false);
     }
 
+    private async UniTask WaitClientTurnAsClientAsync(int playerIndex, CancellationToken cancellationToken)
+    {
+        var gameElementContainer = _gameElementContainer;
+        var playerScoreBoard = gameElementContainer.PlayerScoreBoards[playerIndex];
+
+        playerScoreBoard.Highlight(true);
+        gameElementContainer.ResetKeepFlags();
+
+        gameElementContainer.MakeUIElementsUninteractable();
+
+        var rollCount = 0;
+        while (true)
+        {
+            var hasRolled = rollCount > 0;
+            var canRollMore = rollCount < Constants.RollNum;
+
+            var canKeep = hasRolled && canRollMore;
+            gameElementContainer.UpdateKeepButtons(canKeep, false);
+
+            var isHostContinueTurn = await _isOtherPlayerContinueTurn.ToUniTask(true, cancellationToken);
+            if (isHostContinueTurn)
+                rollCount++;
+            else
+                break;
+        }
+
+        playerScoreBoard.Highlight(false);
+    }
+
+    [Rpc(SendTo.NotServer)]
+    private void AssignClientIndicesRpc(ulong[] playerOrder)
+    {
+        _playerCount = playerOrder.Length;
+
+        for (var i = 0; i < playerOrder.Length; i++)
+        {
+            if (playerOrder[i] == NetworkManager.LocalClientId)
+            {
+                _myIndex = i;
+                _myIndexAssigned.TrySetResult(i);
+                break;
+            }
+        }
+    }
+
     [Rpc(SendTo.NotServer)]
     private void HostTurnFinishedRpc()
     {
@@ -319,9 +412,14 @@ public class NetworkGameManager : NetworkBehaviour
     }
 
     [Rpc(SendTo.NotServer)]
-    private void ClientRollResultRpc(int[] rollResult)
+    private void ClientRollResultRpc(int playerIndex, int[] rollResult)
     {
-        _clientRollResult.Execute(rollResult.ToList());
+        _gameElementContainer.PlayerScoreBoards[playerIndex].SetPreviewScores(GameManagerCommonLogic.CalculateCombinationScores(rollResult.ToList()));
+
+        if (playerIndex == _myIndex)
+            _clientRollResult.Execute(rollResult.ToList());
+        else
+            _isOtherPlayerContinueTurn.Execute(true);
     }
 
     [Rpc(SendTo.NotServer)]
@@ -344,12 +442,15 @@ public class NetworkGameManager : NetworkBehaviour
     }
 
     [Rpc(SendTo.NotServer)]
-    private void ClientUpdatedScoreRpc(Combination combination, int score)
+    private void ClientUpdatedScoreRpc(int playerIndex, Combination combination, int score)
     {
         foreach (var elmt in Constants.AllCombinations)
-            _gameElementContainer.PlayerScoreBoards[1].ResetText(elmt);
+            _gameElementContainer.PlayerScoreBoards[playerIndex].ResetText(elmt);
 
-        _gameElementContainer.PlayerScoreBoards[1].SetConfirmedScore(combination, score);
+        _gameElementContainer.PlayerScoreBoards[playerIndex].SetConfirmedScore(combination, score);
+
+        if (playerIndex != _myIndex)
+            _isOtherPlayerContinueTurn.Execute(false);
     }
 
     [Rpc(SendTo.Server)]
@@ -410,7 +511,6 @@ public class NetworkGameManager : NetworkBehaviour
 
     public struct NetworkGameParameter
     {
-
     }
 
     public struct NetworkGameResult

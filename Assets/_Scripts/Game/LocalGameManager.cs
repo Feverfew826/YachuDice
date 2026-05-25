@@ -17,6 +17,8 @@ public class LocalGameManager : MonoBehaviour
     {
         _gameElementContainer.Initialize();
 
+        _gameElementContainer.InitializePlayerBoard(new string[] { "Player 1", "Player 2" });
+
         using var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, destroyCancellationToken, _gameElementContainer.QuitCancellationToken);
         try
         {

@@ -30,6 +30,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2a461d83595a69f4282945e34da85df0
+    m_Address: GamePhaseNotifier_Player3sTurn.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2f8bdbe931a8e3a419830f851404cdc5
     m_Address: EmotionNotifier_Girl_Four.prefab
     m_ReadOnly: 0
@@ -72,6 +77,16 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 56653dd3cb8541d43be48a45954c4ce2
     m_Address: GamePhaseNotifier_Player2Win.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5ad5ca806ddff4b40804a8845ab888d2
+    m_Address: GamePhaseNotifier_Player3Win.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5e2fb20e8e8e4c64b128871ba556e75f
+    m_Address: WaitingForHostModal.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -135,6 +150,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 940fea448133f384694607330a89625d
+    m_Address: GamePhaseNotifier_Player4sTurn.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a1e2a6ba08d930d46b9a9857d55894d9
     m_Address: EmotionNotifier_Boy_Five.prefab
     m_ReadOnly: 0
@@ -167,6 +187,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b9ecc02f79b2a274ca1ead988b001062
     m_Address: CombinationNotifier_Aces.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cc101673fb111e5459e7cdaeb0f4b31d
+    m_Address: GamePhaseNotifier_Player4Win.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

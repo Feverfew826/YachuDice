@@ -15,7 +15,6 @@ using YachuDice.Utilities;
 
 public static class Constants
 {
-
     public const int DiceNum = 5;
     public const int TurnNum = 12;
     public const int RollNum = 3;
@@ -46,10 +45,6 @@ public static class Constants
 
 public class GameElementContainer : MonoBehaviour
 {
-    [Header("Game Settings")]
-
-    [SerializeField] private string[] _playerNames;
-
     [Header("Dices")]
     [SerializeField] private Dice[] _dices;
 
@@ -100,9 +95,9 @@ public class GameElementContainer : MonoBehaviour
         Assert.AreEqual(_confirmButtons.Length, Constants.AllCombinations.Count, $"Should set {Constants.AllCombinations.Count} confirm buttons.");
     }
 
-    public void InitializePlayerBoard()
+    public void InitializePlayerBoard(string[] playerNames)
     {
-        foreach (var playerName in _playerNames)
+        foreach (var playerName in playerNames)
         {
             var newPlayer = Instantiate(_playerPrefab, _playerParent);
             newPlayer.SetName(playerName);
@@ -142,8 +137,6 @@ public class GameElementContainer : MonoBehaviour
     public void Initialize()
     {
         DoAssertion();
-
-        InitializePlayerBoard();
 
         InitializeDiceInitialPosition();
 
