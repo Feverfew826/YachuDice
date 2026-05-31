@@ -465,25 +465,41 @@ public class NetworkGameManager : NetworkBehaviour
         _gameElementContainer.KeepFlags[index] = isKeep;
     }
 
+    private static EmotionNotifier.Character GetCharacterForIndex(int index) => index switch
+    {
+        0 => EmotionNotifier.Character.Girl,
+        1 => EmotionNotifier.Character.Boy,
+        2 => EmotionNotifier.Character.Dog,
+        _ => EmotionNotifier.Character.Cat,
+    };
+
+    // Hard-coded!! 4인 기준 균등 분할: canvas 위치 -100, 167, 433, 700 → xOffset = canvas - 275
+    private static int GetXOffsetForIndex(int index) => index switch
+    {
+        0 => -375,
+        1 => -108,
+        2 => 158,
+        _ => 425,
+    };
+
     private async UniTask PlayEmotionNotifierLoopAsync(EmotionButtonPanel emotionButtonPanel, CancellationToken cancellationToken)
     {
-        // 수신자 본인 기준: 내 emotion은 왼쪽+Girl, 상대 emotion은 오른쪽+Boy (LocalGameManager의 1P/2P 배치와 유사).
-        const int MyXOffset = -375;
-        const EmotionNotifier.Character MyCharacter = EmotionNotifier.Character.Girl;
+        var myCharacter = GetCharacterForIndex(_myIndex);
+        var myXOffset = GetXOffsetForIndex(_myIndex);
         while (true)
         {
             var emotion = await emotionButtonPanel.OnEmotionNotifierRequested.ToUniTask(true, cancellationToken);
-            EmotionNotifierRequestRpc(emotion);
-            await EmotionNotifier.ShowEmotionNotifierAsync(emotion, MyCharacter, MyXOffset, cancellationToken);
+            EmotionNotifierRequestRpc(emotion, _myIndex);
+            await EmotionNotifier.ShowEmotionNotifierAsync(emotion, myCharacter, myXOffset, cancellationToken);
         }
     }
 
     [Rpc(SendTo.NotMe)]
-    private void EmotionNotifierRequestRpc(EmotionButtonPanel.Emotion emotion)
+    private void EmotionNotifierRequestRpc(EmotionButtonPanel.Emotion emotion, int senderIndex)
     {
-        const int OpponentXOffset = 425;
-        const EmotionNotifier.Character OpponentCharacter = EmotionNotifier.Character.Boy;
-        EmotionNotifier.ShowEmotionNotifierAsync(emotion, OpponentCharacter, OpponentXOffset, destroyCancellationToken).Forget();
+        var character = GetCharacterForIndex(senderIndex);
+        var xOffset = GetXOffsetForIndex(senderIndex);
+        EmotionNotifier.ShowEmotionNotifierAsync(emotion, character, xOffset, destroyCancellationToken).Forget();
     }
 
     public struct NetworkUserChoice : INetworkSerializable
