@@ -155,6 +155,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97a314e4ed190e6479ffda21c989ee39
+    m_Address: EmotionNotifier_Girl_Six.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a1e2a6ba08d930d46b9a9857d55894d9
     m_Address: EmotionNotifier_Boy_Five.prefab
     m_ReadOnly: 0
@@ -190,8 +195,88 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca7e00000000000000000000000c0601
+    m_Address: EmotionNotifier_Cat_Yeah.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca7e00000000000000000000000c0602
+    m_Address: EmotionNotifier_Cat_No.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca7e00000000000000000000000c0603
+    m_Address: EmotionNotifier_Cat_One.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca7e00000000000000000000000c0604
+    m_Address: EmotionNotifier_Cat_Two.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca7e00000000000000000000000c0605
+    m_Address: EmotionNotifier_Cat_Three.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca7e00000000000000000000000c0606
+    m_Address: EmotionNotifier_Cat_Four.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca7e00000000000000000000000c0607
+    m_Address: EmotionNotifier_Cat_Five.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ca7e00000000000000000000000c0608
+    m_Address: EmotionNotifier_Cat_Six.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cc101673fb111e5459e7cdaeb0f4b31d
     m_Address: GamePhaseNotifier_Player4Win.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d09e00000000000000000000000d0601
+    m_Address: EmotionNotifier_Dog_Yeah.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d09e00000000000000000000000d0602
+    m_Address: EmotionNotifier_Dog_No.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d09e00000000000000000000000d0603
+    m_Address: EmotionNotifier_Dog_One.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d09e00000000000000000000000d0604
+    m_Address: EmotionNotifier_Dog_Two.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d09e00000000000000000000000d0605
+    m_Address: EmotionNotifier_Dog_Three.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d09e00000000000000000000000d0606
+    m_Address: EmotionNotifier_Dog_Four.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d09e00000000000000000000000d0607
+    m_Address: EmotionNotifier_Dog_Five.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d09e00000000000000000000000d0608
+    m_Address: EmotionNotifier_Dog_Six.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -252,86 +337,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f387e68456fcc114187d8db950c31f17
     m_Address: CombinationNotifier_Fives.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d09e00000000000000000000000d0601
-    m_Address: EmotionNotifier_Dog_Yeah.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d09e00000000000000000000000d0602
-    m_Address: EmotionNotifier_Dog_No.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d09e00000000000000000000000d0603
-    m_Address: EmotionNotifier_Dog_One.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d09e00000000000000000000000d0604
-    m_Address: EmotionNotifier_Dog_Two.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d09e00000000000000000000000d0605
-    m_Address: EmotionNotifier_Dog_Three.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d09e00000000000000000000000d0606
-    m_Address: EmotionNotifier_Dog_Four.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d09e00000000000000000000000d0607
-    m_Address: EmotionNotifier_Dog_Five.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: d09e00000000000000000000000d0608
-    m_Address: EmotionNotifier_Dog_Six.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ca7e00000000000000000000000c0601
-    m_Address: EmotionNotifier_Cat_Yeah.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ca7e00000000000000000000000c0602
-    m_Address: EmotionNotifier_Cat_No.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ca7e00000000000000000000000c0603
-    m_Address: EmotionNotifier_Cat_One.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ca7e00000000000000000000000c0604
-    m_Address: EmotionNotifier_Cat_Two.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ca7e00000000000000000000000c0605
-    m_Address: EmotionNotifier_Cat_Three.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ca7e00000000000000000000000c0606
-    m_Address: EmotionNotifier_Cat_Four.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ca7e00000000000000000000000c0607
-    m_Address: EmotionNotifier_Cat_Five.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: ca7e00000000000000000000000c0608
-    m_Address: EmotionNotifier_Cat_Six.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

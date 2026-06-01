@@ -228,6 +228,7 @@ public class NetworkGameManager : NetworkBehaviour
                 {
                     if (combinationScores[combination] > 0)
                     {
+                        gameElementContainer.PlayCombinationMelody();
                         await CombinationNotifier.ShowCombinationNotifierAsync(combination, cancellationToken);
                         break;
                     }
@@ -340,6 +341,7 @@ public class NetworkGameManager : NetworkBehaviour
                 {
                     if (combinationScores[combination] > 0)
                     {
+                        gameElementContainer.PlayCombinationMelody();
                         await CombinationNotifier.ShowCombinationNotifierAsync(combination, cancellationToken);
                         break;
                     }

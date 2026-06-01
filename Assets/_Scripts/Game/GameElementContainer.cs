@@ -68,6 +68,10 @@ public class GameElementContainer : MonoBehaviour
     [SerializeField] private Button _pauseMenuResumeButton;
     [SerializeField] private Button _pauseMenuQuitButton;
 
+    [Header("SFX")]
+    [SerializeField] private AudioClip _combinationMelodyClip;
+    private AudioSource _sfxAudioSource;
+
     protected List<PlayerScoreBoard> _playerScoreBoards = new List<PlayerScoreBoard>();
     private ReactiveCollection<bool> _keepFlags = new ReactiveCollection<bool>();
     private List<Vector3> _diceInitialPositions = new List<Vector3>();
@@ -338,6 +342,20 @@ public class GameElementContainer : MonoBehaviour
     public void Quit()
     {
         _quitCancellationTokenSource.Cancel();
+    }
+
+    public void PlayCombinationMelody()
+    {
+        if (_combinationMelodyClip == null)
+            return;
+
+        if (_sfxAudioSource == null)
+        {
+            _sfxAudioSource = gameObject.AddComponent<AudioSource>();
+            _sfxAudioSource.playOnAwake = false;
+        }
+
+        _sfxAudioSource.PlayOneShot(_combinationMelodyClip);
     }
 
     public void UpdateRollButtonState(bool canRollMore)

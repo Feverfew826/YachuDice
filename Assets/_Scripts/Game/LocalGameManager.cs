@@ -130,6 +130,7 @@ public class LocalGameManager : MonoBehaviour
                 {
                     if (combinationScores[combination] > 0)
                     {
+                        gameElementContainer.PlayCombinationMelody();
                         await CombinationNotifier.ShowCombinationNotifierAsync(combination, cancellationToken);
                         break;
                     }
