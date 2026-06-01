@@ -19,8 +19,8 @@ public class NetworkGameManager : NetworkBehaviour
     [SerializeField] private GameElementContainer _gameElementContainer;
     [SerializeField] private EmotionButtonPanel _emotionButtonPanel;
 
-    private ReactiveCommand<bool> _isHostContinueTurn = new();
-    private ReactiveCommand<bool> _isOtherPlayerContinueTurn = new();
+    private ReactiveCommand<(bool isContinueTurn, Combination)> _isHostContinueTurn = new();
+    private ReactiveCommand<(bool isContinueTurn, Combination)> _isOtherPlayerContinueTurn = new();
     private ReactiveCommand _hostTurnFinished = new();
     private ReactiveCommand<List<int>> _clientRollResult = new();
     private ReactiveCommand<UserChoice> _clientUserChoice = new();
@@ -123,13 +123,26 @@ public class NetworkGameManager : NetworkBehaviour
 
     private async UniTask PlayGameAsHostAsync(int playerCount, CancellationToken cancellationToken)
     {
+        await GamePhaseNotifier.ShowGamePhaseNotifierAsync(GamePhaseNotifier.GamePhase.GameStart, cancellationToken);
+
         for (var turnIndex = 0; turnIndex < Constants.TurnNum; turnIndex++)
         {
+            await GamePhaseNotifier.ShowGamePhaseNotifierAsync(GamePhaseNotifier.GamePhase.MyTurn, cancellationToken);
             await PlayHostTurnAsync(cancellationToken);
             HostTurnFinishedRpc();
 
             for (var playerIndex = 1; playerIndex < playerCount; playerIndex++)
             {
+                var gamePhase_turn = playerIndex switch
+                {
+                    1 => GamePhaseNotifier.GamePhase.Player2sTurn,
+                    2 => GamePhaseNotifier.GamePhase.Player3sTurn,
+                    3 => GamePhaseNotifier.GamePhase.Player4sTurn,
+                    _ => GamePhaseNotifier.GamePhase.Player2sTurn
+                };
+
+                await GamePhaseNotifier.ShowGamePhaseNotifierAsync(gamePhase_turn, cancellationToken);
+
                 await WaitClientTurnAsHostAsync(playerIndex, cancellationToken);
             }
         }
@@ -167,11 +180,21 @@ public class NetworkGameManager : NetworkBehaviour
             {
                 var rollResult = await gameElementContainer.RollDicesAsync(cancellationToken);
 
-                var previewScores = GameManagerCommonLogic.CalculateCombinationScores(rollResult);
+                var combinationScores = GameManagerCommonLogic.CalculateCombinationScores(rollResult);
 
-                playerScoreBoard.SetPreviewScores(previewScores);
+                playerScoreBoard.SetPreviewScores(combinationScores);
 
                 HostRollResultRpc(rollResult.ToArray());
+
+                foreach (var combination in GameManagerCommonLogic.SpecialCombination.Reverse())
+                {
+                    if (combinationScores[combination] > 0)
+                    {
+                        gameElementContainer.PlayCombinationMelody();
+                        await CombinationNotifier.ShowCombinationNotifierAsync(combination, cancellationToken);
+                        break;
+                    }
+                }
 
                 rollCount++;
             }
@@ -180,6 +203,8 @@ public class NetworkGameManager : NetworkBehaviour
                 var updatedScore = GameManagerCommonLogic.ProcessUserChoiceConfirm(gameElementContainer, playerScoreBoard, userChoice.combination);
 
                 HostUpdatedScoreRpc(updatedScore.combination, updatedScore.score);
+
+                await CombinationNotifier.ShowCombinationNotifierAsync(userChoice.combination, cancellationToken);
 
                 break;
             }
@@ -242,6 +267,8 @@ public class NetworkGameManager : NetworkBehaviour
 
                 ClientUpdatedScoreRpc(playerIndex, updatedScore.combination, updatedScore.score);
 
+                await CombinationNotifier.ShowCombinationNotifierAsync(userChoice.combination, cancellationToken);
+
                 break;
             }
             else
@@ -255,15 +282,34 @@ public class NetworkGameManager : NetworkBehaviour
 
     private async UniTask PlayGameAsClientAsync(int playerCount, CancellationToken cancellationToken)
     {
+        await GamePhaseNotifier.ShowGamePhaseNotifierAsync(GamePhaseNotifier.GamePhase.GameStart, cancellationToken);
+
         for (var turnIndex = 0; turnIndex < Constants.TurnNum; turnIndex++)
         {
+            await GamePhaseNotifier.ShowGamePhaseNotifierAsync(GamePhaseNotifier.GamePhase.Player1sTurn, cancellationToken);
             await WaitHostTurnAsync(0, cancellationToken);
             for (var playerIndex = 1; playerIndex < playerCount; playerIndex++)
             {
                 if (_myIndex == playerIndex)
+                {
+                    await GamePhaseNotifier.ShowGamePhaseNotifierAsync(GamePhaseNotifier.GamePhase.MyTurn, cancellationToken);
                     await PlayClientTurnAsync(cancellationToken);
+                }
                 else
+                {
+                    var gamePhase_turn = playerIndex switch
+                    {
+                        1 => GamePhaseNotifier.GamePhase.Player2sTurn,
+                        2 => GamePhaseNotifier.GamePhase.Player3sTurn,
+                        3 => GamePhaseNotifier.GamePhase.Player4sTurn,
+                        _ => GamePhaseNotifier.GamePhase.Player2sTurn
+                    };
+
+                    await GamePhaseNotifier.ShowGamePhaseNotifierAsync(gamePhase_turn, cancellationToken);
+
                     await WaitClientTurnAsClientAsync(playerIndex, cancellationToken);
+                }
+
             }
         }
     }
@@ -287,11 +333,16 @@ public class NetworkGameManager : NetworkBehaviour
             var canKeep = hasRolled && canRollMore;
             gameElementContainer.UpdateKeepButtons(canKeep, false);
 
-            var isHostContinueTurn = await _isHostContinueTurn.ToUniTask(true, cancellationToken);
+            var (isHostContinueTurn, combination) = await _isHostContinueTurn.ToUniTask(true, cancellationToken);
             if (isHostContinueTurn)
+            {
                 rollCount++;
+            }
             else
+            {
+                await CombinationNotifier.ShowCombinationNotifierAsync(combination, cancellationToken);
                 break;
+            }
         }
 
         playerScoreBoard.Highlight(false);
@@ -351,6 +402,8 @@ public class NetworkGameManager : NetworkBehaviour
             }
             else if (userChoice.choiceType == ChoiceType.Confirm)
             {
+                await CombinationNotifier.ShowCombinationNotifierAsync(userChoice.combination, cancellationToken);
+
                 break;
             }
             else
@@ -381,11 +434,16 @@ public class NetworkGameManager : NetworkBehaviour
             var canKeep = hasRolled && canRollMore;
             gameElementContainer.UpdateKeepButtons(canKeep, false);
 
-            var isHostContinueTurn = await _isOtherPlayerContinueTurn.ToUniTask(true, cancellationToken);
+            var (isHostContinueTurn, combination) = await _isOtherPlayerContinueTurn.ToUniTask(true, cancellationToken);
             if (isHostContinueTurn)
+            {
                 rollCount++;
+            }
             else
+            {
+                await CombinationNotifier.ShowCombinationNotifierAsync(combination, cancellationToken);
                 break;
+            }
         }
 
         playerScoreBoard.Highlight(false);
@@ -416,20 +474,44 @@ public class NetworkGameManager : NetworkBehaviour
     [Rpc(SendTo.NotServer)]
     private void ClientRollResultRpc(int playerIndex, int[] rollResult)
     {
-        _gameElementContainer.PlayerScoreBoards[playerIndex].SetPreviewScores(GameManagerCommonLogic.CalculateCombinationScores(rollResult.ToList()));
+        var combinationScores = GameManagerCommonLogic.CalculateCombinationScores(rollResult.ToList());
+
+        _gameElementContainer.PlayerScoreBoards[playerIndex].SetPreviewScores(combinationScores);
+
+        foreach (var combination in GameManagerCommonLogic.SpecialCombination.Reverse())
+        {
+            if (combinationScores[combination] > 0)
+            {
+                _gameElementContainer.PlayCombinationMelody();
+                CombinationNotifier.ShowCombinationNotifierAsync(combination, this.destroyCancellationToken).Forget();
+                break;
+            }
+        }
 
         if (playerIndex == _myIndex)
             _clientRollResult.Execute(rollResult.ToList());
         else
-            _isOtherPlayerContinueTurn.Execute(true);
+            _isOtherPlayerContinueTurn.Execute((true, Combination.Aces));
     }
 
     [Rpc(SendTo.NotServer)]
     private void HostRollResultRpc(int[] rollResult)
     {
-        _gameElementContainer.PlayerScoreBoards[0].SetPreviewScores(GameManagerCommonLogic.CalculateCombinationScores(rollResult.ToList()));
+        var combinationScores = GameManagerCommonLogic.CalculateCombinationScores(rollResult.ToList());
 
-        _isHostContinueTurn.Execute(true);
+        _gameElementContainer.PlayerScoreBoards[0].SetPreviewScores(combinationScores);
+
+        foreach (var combination in GameManagerCommonLogic.SpecialCombination.Reverse())
+        {
+            if (combinationScores[combination] > 0)
+            {
+                _gameElementContainer.PlayCombinationMelody();
+                CombinationNotifier.ShowCombinationNotifierAsync(combination, this.destroyCancellationToken).Forget();
+                break;
+            }
+        }
+
+        _isHostContinueTurn.Execute((true, Combination.Aces));
     }
 
     [Rpc(SendTo.NotServer)]
@@ -440,7 +522,7 @@ public class NetworkGameManager : NetworkBehaviour
 
         _gameElementContainer.PlayerScoreBoards[0].SetConfirmedScore(combination, score);
 
-        _isHostContinueTurn.Execute(false);
+        _isHostContinueTurn.Execute((false, combination));
     }
 
     [Rpc(SendTo.NotServer)]
@@ -452,7 +534,7 @@ public class NetworkGameManager : NetworkBehaviour
         _gameElementContainer.PlayerScoreBoards[playerIndex].SetConfirmedScore(combination, score);
 
         if (playerIndex != _myIndex)
-            _isOtherPlayerContinueTurn.Execute(false);
+            _isOtherPlayerContinueTurn.Execute((false, combination));
     }
 
     [Rpc(SendTo.Server)]
