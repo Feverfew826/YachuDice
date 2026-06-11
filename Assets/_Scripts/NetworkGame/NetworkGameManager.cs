@@ -180,7 +180,8 @@ public class NetworkGameManager : NetworkBehaviour
             // 사용자 입력 처리(돌리거나, 멈추거나)
             if (userChoice.choiceType == ChoiceType.Roll)
             {
-                RollStartedRpc();
+                gameElementContainer.UpdateRollCountUI(rollCount + 1);
+                RollStartedRpc(rollCount + 1);
                 var rollResult = await gameElementContainer.RollDicesAsync(cancellationToken);
 
                 var combinationScores = GameManagerCommonLogic.CalculateCombinationScores(rollResult);
@@ -247,7 +248,8 @@ public class NetworkGameManager : NetworkBehaviour
             // 사용자 입력 처리(돌리거나, 멈추거나)
             if (userChoice.choiceType == ChoiceType.Roll)
             {
-                RollStartedRpc();
+                gameElementContainer.UpdateRollCountUI(rollCount + 1);
+                RollStartedRpc(rollCount + 1);
                 var rollResult = await gameElementContainer.RollDicesAsync(cancellationToken);
 
                 var combinationScores = GameManagerCommonLogic.CalculateCombinationScores(rollResult);
@@ -488,11 +490,12 @@ public class NetworkGameManager : NetworkBehaviour
         _hostTurnFinished.Execute();
     }
 
-    // 호스트가 RollDicesAsync를 시작하는 순간 클라이언트에 알려, 복제되는 주사위와 동기되게 RollSfx를 재생한다.
+    // 호스트가 RollDicesAsync를 시작하는 순간 클라이언트에 알려, 복제되는 주사위와 동기되게 RollSfx 재생 + 롤 카운트 표시.
     [Rpc(SendTo.NotServer)]
-    private void RollStartedRpc()
+    private void RollStartedRpc(int rollCount)
     {
         _gameElementContainer.PlayRollSfx();
+        _gameElementContainer.UpdateRollCountUI(rollCount);
     }
 
     [Rpc(SendTo.NotServer)]

@@ -122,6 +122,7 @@ public class LocalGameManager : MonoBehaviour
             // 사용자 입력 처리(돌리거나, 멈추거나)
             if (userChoice.choiceType == ChoiceType.Roll)
             {
+                gameElementContainer.UpdateRollCountUI(rollCount + 1);
                 var rollResult = await gameElementContainer.RollDicesAsync(cancellationToken);
 
                 var combinationScores = GameManagerCommonLogic.CalculateCombinationScores(rollResult);
