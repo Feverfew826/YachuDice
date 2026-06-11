@@ -69,8 +69,8 @@ public class GameElementContainer : MonoBehaviour
     [SerializeField] private Button _pauseMenuQuitButton;
 
     [Header("SFX")]
-    [SerializeField] private AudioClip _combinationMelodyClip;
-    private AudioSource _sfxAudioSource;
+    [SerializeField] private AudioSource _combinationMelodyAudioSource;
+    [SerializeField] private AudioSource _confirmSfxAudioSource;
 
     protected List<PlayerScoreBoard> _playerScoreBoards = new List<PlayerScoreBoard>();
     private ReactiveCollection<bool> _keepFlags = new ReactiveCollection<bool>();
@@ -105,6 +105,7 @@ public class GameElementContainer : MonoBehaviour
         {
             var newPlayer = Instantiate(_playerPrefab, _playerParent);
             newPlayer.SetName(playerName);
+            newPlayer.SetOnScoreConfirmed(PlayConfirmSfx);
             _playerScoreBoards.Add(newPlayer);
         }
     }
@@ -346,16 +347,20 @@ public class GameElementContainer : MonoBehaviour
 
     public void PlayCombinationMelody()
     {
-        if (_combinationMelodyClip == null)
+        if (_combinationMelodyAudioSource == null || _combinationMelodyAudioSource.clip == null)
             return;
 
-        if (_sfxAudioSource == null)
-        {
-            _sfxAudioSource = gameObject.AddComponent<AudioSource>();
-            _sfxAudioSource.playOnAwake = false;
-        }
+        // 클립·pitch·volume 등은 AudioSource에 설정된 값을 그대로 사용한다.
+        _combinationMelodyAudioSource.PlayOneShot(_combinationMelodyAudioSource.clip);
+    }
 
-        _sfxAudioSource.PlayOneShot(_combinationMelodyClip);
+    public void PlayConfirmSfx()
+    {
+        if (_confirmSfxAudioSource == null || _confirmSfxAudioSource.clip == null)
+            return;
+
+        // 클립·pitch·volume 등은 AudioSource에 설정된 값을 그대로 사용한다.
+        _confirmSfxAudioSource.PlayOneShot(_confirmSfxAudioSource.clip);
     }
 
     public void UpdateRollButtonState(bool canRollMore)

@@ -1468,7 +1468,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  _role: 2
+  _role: 1
 --- !u!1 &8551798135650419035
 GameObject:
   m_ObjectHideFlags: 0

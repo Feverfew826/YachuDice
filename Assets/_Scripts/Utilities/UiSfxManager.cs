@@ -7,15 +7,13 @@ namespace YachuDice.Utilities
     public class UiSfxManager : MonoBehaviour
     {
         [Serializable]
-        private struct RoleClip
+        private struct RoleSource
         {
             public SfxRole role;
-            public AudioClip clip;
+            public AudioSource source;
         }
 
-        [SerializeField] private AudioSource _audioSource;
-        [SerializeField] private RoleClip[] _clickClips;
-        [SerializeField] private AudioClip _moveClip;
+        [SerializeField] private RoleSource[] _roleSources;
 
         // 클릭 직후 이 시간(초) 동안은 move음을 내지 않는다. 창이 닫히며 버튼이 커서 아래로 드러나
         // 부수적으로 발생하는 hover(이동)음이 방금 난 클릭음(예: 뒤로가기)을 가리는 것을 막기 위함.
@@ -60,9 +58,7 @@ namespace YachuDice.Utilities
         {
             _lastClickTime = Time.unscaledTime;
 
-            var clip = FindClip(role);
-            if (clip != null)
-                _audioSource.PlayOneShot(clip);
+            Play(role);
         }
 
         private void PlayMoveInternal()
@@ -70,19 +66,22 @@ namespace YachuDice.Utilities
             if (Time.unscaledTime - _lastClickTime < _moveSuppressAfterClickSeconds)
                 return;
 
-            if (_moveClip != null)
-                _audioSource.PlayOneShot(_moveClip);
+            Play(SfxRole.Move);
         }
 
-        private AudioClip FindClip(SfxRole role)
+        private void Play(SfxRole role)
         {
-            foreach (var entry in _clickClips)
+            foreach (var entry in _roleSources)
             {
                 if (entry.role == role)
-                    return entry.clip;
-            }
+                {
+                    // 클립·pitch·volume 등은 각 AudioSource에 설정된 값을 그대로 사용한다.
+                    if (entry.source != null && entry.source.clip != null)
+                        entry.source.PlayOneShot(entry.source.clip);
 
-            return null;
+                    return;
+                }
+            }
         }
     }
 }

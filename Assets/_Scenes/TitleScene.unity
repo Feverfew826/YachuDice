@@ -1747,7 +1747,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  _role: 2
+  _role: 1
 --- !u!114 &1765514134
 MonoBehaviour:
   m_ObjectHideFlags: 0
