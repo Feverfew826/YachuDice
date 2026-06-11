@@ -18,6 +18,9 @@ public class PlayerScoreBoard : MonoBehaviour
     private ReactiveDictionary<Combination, int> _scoreDictionary = new ReactiveDictionary<Combination, int>();
     private Cell _lastRegisteredCell;
 
+    // 직전 SetConfirmedScore가 보너스 합계를 처음으로 임계값까지 채웠는지(= 이번 확정으로 보너스 달성).
+    public bool DidLastConfirmFillBonus { get; private set; }
+
     public void SetName(string name)
     {
         _nameText.text = name;
@@ -91,7 +94,11 @@ public class PlayerScoreBoard : MonoBehaviour
 
     public void SetConfirmedScore(Combination category, int score)
     {
+        var wasBonusReached = CalcBonusSum() >= BonusScoreThreshold;
+
         _scoreDictionary.Add(category, score);
+
+        DidLastConfirmFillBonus = wasBonusReached == false && CalcBonusSum() >= BonusScoreThreshold;
 
         var cell = _cells[(int)category];
         cell.SetConfirmedScore(score, Color.black);

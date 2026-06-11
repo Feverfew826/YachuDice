@@ -211,6 +211,9 @@ public class NetworkGameManager : NetworkBehaviour
                 await gameElementContainer.PlayScoredVoiceAndConfirmSfxAsync(cancellationToken);
                 await CombinationNotifier.ShowCombinationNotifierAsync(userChoice.combination, cancellationToken);
 
+                if (playerScoreBoard.DidLastConfirmFillBonus)
+                    await GameRuleNotifier.ShowGameRuleNotifierAsync(GameRuleNotifier.GameRule.Bonus, cancellationToken);
+
                 break;
             }
             else
@@ -278,6 +281,9 @@ public class NetworkGameManager : NetworkBehaviour
 
                 await gameElementContainer.PlayScoredVoiceAndConfirmSfxAsync(cancellationToken);
                 await CombinationNotifier.ShowCombinationNotifierAsync(userChoice.combination, cancellationToken);
+
+                if (playerScoreBoard.DidLastConfirmFillBonus)
+                    await GameRuleNotifier.ShowGameRuleNotifierAsync(GameRuleNotifier.GameRule.Bonus, cancellationToken);
 
                 break;
             }
@@ -354,6 +360,9 @@ public class NetworkGameManager : NetworkBehaviour
             {
                 await gameElementContainer.PlayScoredVoiceAndConfirmSfxAsync(cancellationToken);
                 await CombinationNotifier.ShowCombinationNotifierAsync(combination, cancellationToken);
+
+                if (playerScoreBoard.DidLastConfirmFillBonus)
+                    await GameRuleNotifier.ShowGameRuleNotifierAsync(GameRuleNotifier.GameRule.Bonus, cancellationToken);
                 break;
             }
         }
@@ -420,6 +429,9 @@ public class NetworkGameManager : NetworkBehaviour
                 await gameElementContainer.PlayScoredVoiceAndConfirmSfxAsync(cancellationToken);
                 await CombinationNotifier.ShowCombinationNotifierAsync(userChoice.combination, cancellationToken);
 
+                if (playerScoreBoard.DidLastConfirmFillBonus)
+                    await GameRuleNotifier.ShowGameRuleNotifierAsync(GameRuleNotifier.GameRule.Bonus, cancellationToken);
+
                 break;
             }
             else
@@ -461,6 +473,9 @@ public class NetworkGameManager : NetworkBehaviour
             {
                 await gameElementContainer.PlayScoredVoiceAndConfirmSfxAsync(cancellationToken);
                 await CombinationNotifier.ShowCombinationNotifierAsync(combination, cancellationToken);
+
+                if (playerScoreBoard.DidLastConfirmFillBonus)
+                    await GameRuleNotifier.ShowGameRuleNotifierAsync(GameRuleNotifier.GameRule.Bonus, cancellationToken);
                 break;
             }
         }

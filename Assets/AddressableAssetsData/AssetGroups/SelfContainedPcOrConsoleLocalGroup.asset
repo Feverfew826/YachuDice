@@ -110,6 +110,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7586535443b875c47bc1623a8f1dc4fd
+    m_Address: GameRuleNotifier_Bonus.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 77b01bc9a08323c41a815015d5ec53da
     m_Address: GamePhaseNotifier_YouWin.prefab
     m_ReadOnly: 0

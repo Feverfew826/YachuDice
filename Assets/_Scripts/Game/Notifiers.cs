@@ -63,6 +63,36 @@ public class GamePhaseNotifier
     }
 }
 
+public class GameRuleNotifier
+{
+    public enum GameRule
+    {
+        Bonus,
+    }
+
+    public static async UniTask ShowGameRuleNotifierAsync(GameRule gameRule, CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var animatorLoad = await AddressableWrapper.DisposableInstantiateAsync<Animator>($"GameRuleNotifier_{gameRule}.prefab");
+            var animator = animatorLoad.Instance;
+
+            animator.Update(0f);
+            var length = animator.GetCurrentAnimatorStateInfo(0).length;
+            await UniTask.Delay(System.TimeSpan.FromSeconds(length), cancellationToken: cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception e)
+        {
+            // 자산 미준비인 경우 게임 흐름은 계속 가도록 함.
+            Debug.LogWarning($"[GameRuleNotifier] Failed to show {gameRule}: {e.Message}");
+        }
+    }
+}
+
 public class EmotionNotifier
 {
     public enum Character

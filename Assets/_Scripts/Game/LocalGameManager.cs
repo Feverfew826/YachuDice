@@ -148,6 +148,9 @@ public class LocalGameManager : MonoBehaviour
                 await gameElementContainer.PlayScoredVoiceAndConfirmSfxAsync(cancellationToken);
                 await CombinationNotifier.ShowCombinationNotifierAsync(userChoice.combination, cancellationToken);
 
+                if (playerScoreBoard.DidLastConfirmFillBonus)
+                    await GameRuleNotifier.ShowGameRuleNotifierAsync(GameRuleNotifier.GameRule.Bonus, cancellationToken);
+
                 break;
             }
             else

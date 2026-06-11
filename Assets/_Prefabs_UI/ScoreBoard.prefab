@@ -67,7 +67,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Bonus
 
-    sum'
+    (+35)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8215b3a6e1ed8694aa91da2d80b4717e, type: 2}
   m_sharedMaterial: {fileID: -6039862642064425207, guid: 8215b3a6e1ed8694aa91da2d80b4717e, type: 2}
