@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 using TMPro;
@@ -18,16 +17,10 @@ public class PlayerScoreBoard : MonoBehaviour
 
     private ReactiveDictionary<Combination, int> _scoreDictionary = new ReactiveDictionary<Combination, int>();
     private Cell _lastRegisteredCell;
-    private Action _onScoreConfirmed;
 
     public void SetName(string name)
     {
         _nameText.text = name;
-    }
-
-    public void SetOnScoreConfirmed(Action onScoreConfirmed)
-    {
-        _onScoreConfirmed = onScoreConfirmed;
     }
 
     public int CalcTotalScore()
@@ -108,8 +101,6 @@ public class PlayerScoreBoard : MonoBehaviour
 
         _lastRegisteredCell = cell;
         _lastRegisteredCell.SetLastRegisteredMarker(true);
-
-        _onScoreConfirmed?.Invoke();
     }
 
     public void ResetText(Combination category)

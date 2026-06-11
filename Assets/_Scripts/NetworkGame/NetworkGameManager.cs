@@ -165,6 +165,8 @@ public class NetworkGameManager : NetworkBehaviour
             // UI 업데이트
             gameElementContainer.UpdateRollButtonState(canRollMore);
 
+            gameElementContainer.UpdateRollCountUI(rollCount);
+
             gameElementContainer.UpdateConfirmButtons(playerScoreBoard, hasRolled);
 
             var canKeep = hasRolled && canRollMore;
@@ -178,6 +180,7 @@ public class NetworkGameManager : NetworkBehaviour
             // 사용자 입력 처리(돌리거나, 멈추거나)
             if (userChoice.choiceType == ChoiceType.Roll)
             {
+                RollStartedRpc();
                 var rollResult = await gameElementContainer.RollDicesAsync(cancellationToken);
 
                 var combinationScores = GameManagerCommonLogic.CalculateCombinationScores(rollResult);
@@ -204,6 +207,7 @@ public class NetworkGameManager : NetworkBehaviour
 
                 HostUpdatedScoreRpc(updatedScore.combination, updatedScore.score);
 
+                await gameElementContainer.PlayScoredVoiceAndConfirmSfxAsync(cancellationToken);
                 await CombinationNotifier.ShowCombinationNotifierAsync(userChoice.combination, cancellationToken);
 
                 break;
@@ -233,6 +237,8 @@ public class NetworkGameManager : NetworkBehaviour
             var hasRolled = rollCount > 0;
             var canRollMore = rollCount < Constants.RollNum;
 
+            gameElementContainer.UpdateRollCountUI(rollCount);
+
             var canKeep = hasRolled && canRollMore;
             gameElementContainer.UpdateKeepButtons(canKeep, false);
 
@@ -241,6 +247,7 @@ public class NetworkGameManager : NetworkBehaviour
             // 사용자 입력 처리(돌리거나, 멈추거나)
             if (userChoice.choiceType == ChoiceType.Roll)
             {
+                RollStartedRpc();
                 var rollResult = await gameElementContainer.RollDicesAsync(cancellationToken);
 
                 var combinationScores = GameManagerCommonLogic.CalculateCombinationScores(rollResult);
@@ -267,6 +274,7 @@ public class NetworkGameManager : NetworkBehaviour
 
                 ClientUpdatedScoreRpc(playerIndex, updatedScore.combination, updatedScore.score);
 
+                await gameElementContainer.PlayScoredVoiceAndConfirmSfxAsync(cancellationToken);
                 await CombinationNotifier.ShowCombinationNotifierAsync(userChoice.combination, cancellationToken);
 
                 break;
@@ -330,6 +338,8 @@ public class NetworkGameManager : NetworkBehaviour
             var hasRolled = rollCount > 0;
             var canRollMore = rollCount < Constants.RollNum;
 
+            gameElementContainer.UpdateRollCountUI(rollCount);
+
             var canKeep = hasRolled && canRollMore;
             gameElementContainer.UpdateKeepButtons(canKeep, false);
 
@@ -340,6 +350,7 @@ public class NetworkGameManager : NetworkBehaviour
             }
             else
             {
+                await gameElementContainer.PlayScoredVoiceAndConfirmSfxAsync(cancellationToken);
                 await CombinationNotifier.ShowCombinationNotifierAsync(combination, cancellationToken);
                 break;
             }
@@ -366,6 +377,8 @@ public class NetworkGameManager : NetworkBehaviour
 
             // UI 업데이트
             gameElementContainer.UpdateRollButtonState(canRollMore);
+
+            gameElementContainer.UpdateRollCountUI(rollCount);
 
             gameElementContainer.UpdateConfirmButtons(playerScoreBoard, hasRolled);
 
@@ -402,6 +415,7 @@ public class NetworkGameManager : NetworkBehaviour
             }
             else if (userChoice.choiceType == ChoiceType.Confirm)
             {
+                await gameElementContainer.PlayScoredVoiceAndConfirmSfxAsync(cancellationToken);
                 await CombinationNotifier.ShowCombinationNotifierAsync(userChoice.combination, cancellationToken);
 
                 break;
@@ -431,6 +445,8 @@ public class NetworkGameManager : NetworkBehaviour
             var hasRolled = rollCount > 0;
             var canRollMore = rollCount < Constants.RollNum;
 
+            gameElementContainer.UpdateRollCountUI(rollCount);
+
             var canKeep = hasRolled && canRollMore;
             gameElementContainer.UpdateKeepButtons(canKeep, false);
 
@@ -441,6 +457,7 @@ public class NetworkGameManager : NetworkBehaviour
             }
             else
             {
+                await gameElementContainer.PlayScoredVoiceAndConfirmSfxAsync(cancellationToken);
                 await CombinationNotifier.ShowCombinationNotifierAsync(combination, cancellationToken);
                 break;
             }
@@ -469,6 +486,13 @@ public class NetworkGameManager : NetworkBehaviour
     private void HostTurnFinishedRpc()
     {
         _hostTurnFinished.Execute();
+    }
+
+    // 호스트가 RollDicesAsync를 시작하는 순간 클라이언트에 알려, 복제되는 주사위와 동기되게 RollSfx를 재생한다.
+    [Rpc(SendTo.NotServer)]
+    private void RollStartedRpc()
+    {
+        _gameElementContainer.PlayRollSfx();
     }
 
     [Rpc(SendTo.NotServer)]

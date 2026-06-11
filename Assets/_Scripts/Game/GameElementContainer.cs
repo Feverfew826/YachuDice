@@ -4,6 +4,8 @@ using System.Threading;
 
 using Cysharp.Threading.Tasks;
 
+using TMPro;
+
 using UniRx;
 
 using UnityEngine;
@@ -55,6 +57,7 @@ public class GameElementContainer : MonoBehaviour
     [SerializeField] private Button[] _keepButtons;
     [SerializeField] private Button[] _confirmButtons;
     [SerializeField] private Button _rollButton;
+    [SerializeField] private TMP_Text _rollCountText;
     [SerializeField] private Button _quitButton;
 
     [Header("Dice Roll Settings")]
@@ -71,6 +74,9 @@ public class GameElementContainer : MonoBehaviour
     [Header("SFX")]
     [SerializeField] private AudioSource _combinationMelodyAudioSource;
     [SerializeField] private AudioSource _confirmSfxAudioSource;
+    [SerializeField] private AudioSource _scoredVoiceAudioSource;
+    [SerializeField] private AudioSource _rollSfxAudioSource;
+    [SerializeField] private float _confirmSoundWaitSeconds = 1f;
 
     protected List<PlayerScoreBoard> _playerScoreBoards = new List<PlayerScoreBoard>();
     private ReactiveCollection<bool> _keepFlags = new ReactiveCollection<bool>();
@@ -105,7 +111,6 @@ public class GameElementContainer : MonoBehaviour
         {
             var newPlayer = Instantiate(_playerPrefab, _playerParent);
             newPlayer.SetName(playerName);
-            newPlayer.SetOnScoreConfirmed(PlayConfirmSfx);
             _playerScoreBoards.Add(newPlayer);
         }
     }
@@ -212,6 +217,10 @@ public class GameElementContainer : MonoBehaviour
 
     public async UniTask<List<int>> RollDicesAsync(CancellationToken cancellationToken)
     {
+        // 주사위가 굴러가기 시작하는 이 순간에 굴리는 머신(로컬/호스트)에서 재생한다.
+        // 네트워크 클라이언트는 호스트가 RollStartedRpc로 따로 알려준다(주사위는 NetworkRigidbody로 복제됨).
+        PlayRollSfx();
+
         var tasks = new List<UniTask>();
         for (var i = 0; i < Constants.DiceNum; i++)
         {
@@ -345,22 +354,27 @@ public class GameElementContainer : MonoBehaviour
         _quitCancellationTokenSource.Cancel();
     }
 
-    public void PlayCombinationMelody()
-    {
-        if (_combinationMelodyAudioSource == null || _combinationMelodyAudioSource.clip == null)
-            return;
+    public void PlayCombinationMelody() => PlaySfx(_combinationMelodyAudioSource);
 
-        // 클립·pitch·volume 등은 AudioSource에 설정된 값을 그대로 사용한다.
-        _combinationMelodyAudioSource.PlayOneShot(_combinationMelodyAudioSource.clip);
+    public void PlayRollSfx() => PlaySfx(_rollSfxAudioSource);
+
+    // ScoredVoice와 ConfirmSfx를 함께 재생하고, 인스펙터에 지정한 시간만큼 기다린다(반환 후 족보 UI를 표시).
+    public async UniTask PlayScoredVoiceAndConfirmSfxAsync(CancellationToken cancellationToken)
+    {
+        PlaySfx(_scoredVoiceAudioSource);
+        PlaySfx(_confirmSfxAudioSource);
+
+        if (_confirmSoundWaitSeconds > 0f)
+            await UniTask.Delay((int)(_confirmSoundWaitSeconds * 1000f), cancellationToken: cancellationToken);
     }
 
-    public void PlayConfirmSfx()
+    private static void PlaySfx(AudioSource audioSource)
     {
-        if (_confirmSfxAudioSource == null || _confirmSfxAudioSource.clip == null)
+        if (audioSource == null || audioSource.clip == null)
             return;
 
         // 클립·pitch·volume 등은 AudioSource에 설정된 값을 그대로 사용한다.
-        _confirmSfxAudioSource.PlayOneShot(_confirmSfxAudioSource.clip);
+        audioSource.PlayOneShot(audioSource.clip);
     }
 
     public void UpdateRollButtonState(bool canRollMore)
@@ -368,6 +382,12 @@ public class GameElementContainer : MonoBehaviour
         _rollButton.gameObject.SetActive(canRollMore);
         if (canRollMore)
             EventSystem.current.SetSelectedGameObject(_rollButton.gameObject);
+    }
+
+    public void UpdateRollCountUI(int rollCount)
+    {
+        if (_rollCountText != null)
+            _rollCountText.text = $"{rollCount} / {Constants.RollNum}";
     }
 
     public void UpdateKeepButtons(bool active, bool interactable)

@@ -107,6 +107,8 @@ public class LocalGameManager : MonoBehaviour
             // UI 업데이트
             gameElementContainer.UpdateRollButtonState(canRollMore);
 
+            gameElementContainer.UpdateRollCountUI(rollCount);
+
             gameElementContainer.UpdateConfirmButtons(playerScoreBoard, hasRolled);
 
             var canKeep = hasRolled && canRollMore;
@@ -142,6 +144,7 @@ public class LocalGameManager : MonoBehaviour
             {
                 GameManagerCommonLogic.ProcessUserChoiceConfirm(gameElementContainer, playerScoreBoard, userChoice.combination);
 
+                await gameElementContainer.PlayScoredVoiceAndConfirmSfxAsync(cancellationToken);
                 await CombinationNotifier.ShowCombinationNotifierAsync(userChoice.combination, cancellationToken);
 
                 break;
